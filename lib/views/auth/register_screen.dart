@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import '../../models/patient.dart';
-import '../../models/utilisateur.dart';
+import '../../models/register_request.dart';
 import '../../view_models/auth_view_model.dart';
 
 class RegisterScreen extends StatefulWidget {
@@ -13,14 +12,16 @@ class RegisterScreen extends StatefulWidget {
 
 class _RegisterScreenState extends State<RegisterScreen> {
   final _formKey = GlobalKey<FormState>();
+  final _usernameController = TextEditingController();
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
-  final _nomController = TextEditingController();
-  final _prenomController = TextEditingController();
-  final _cinController = TextEditingController();
-  final _telephoneController = TextEditingController();
-
-  String? _selectedSexe;
+  final _firstNameController = TextEditingController();
+  final _lastNameController = TextEditingController();
+  final _phoneController = TextEditingController();
+  final _bloodTypeController = TextEditingController();
+  final _allergiesController = TextEditingController();
+  final _emergencyContactController = TextEditingController();
+  final _emergencyPhoneController = TextEditingController();
 
   @override
   Widget build(BuildContext context) {
@@ -35,84 +36,96 @@ class _RegisterScreenState extends State<RegisterScreen> {
           child: SingleChildScrollView(
             child: Column(
               children: [
-                // Champ Nom
+                // Username (obligatoire)
                 TextFormField(
-                  controller: _nomController,
-                  decoration: const InputDecoration(labelText: 'Nom'),
+                  controller: _usernameController,
+                  decoration: const InputDecoration(labelText: 'Nom d\'utilisateur*'),
                   validator: (value) {
                     if (value == null || value.isEmpty) {
-                      return 'Veuillez entrer votre nom';
+                      return 'Ce champ est obligatoire';
                     }
                     return null;
                   },
                 ),
-                // Champ Prénom
-                TextFormField(
-                  controller: _prenomController,
-                  decoration: const InputDecoration(labelText: 'Prénom'),
-                  validator: (value) {
-                    if (value == null || value.isEmpty) {
-                      return 'Veuillez entrer votre prénom';
-                    }
-                    return null;
-                  },
-                ),
-                // Champ Email
+                const SizedBox(height: 10),
+
+                // Email
                 TextFormField(
                   controller: _emailController,
-                  decoration: const InputDecoration(labelText: 'Email'),
+                  decoration: const InputDecoration(labelText: 'Email*'),
                   keyboardType: TextInputType.emailAddress,
                   validator: (value) {
                     if (value == null || value.isEmpty || !value.contains('@')) {
-                      return 'Veuillez entrer un email valide';
+                      return 'Email invalide';
                     }
                     return null;
                   },
                 ),
-                // Champ Mot de passe
+                const SizedBox(height: 10),
+
+                // Mot de passe
                 TextFormField(
                   controller: _passwordController,
-                  decoration: const InputDecoration(labelText: 'Mot de passe'),
+                  decoration: const InputDecoration(labelText: 'Mot de passe*'),
                   obscureText: true,
                   validator: (value) {
                     if (value == null || value.length < 6) {
-                      return 'Le mot de passe doit contenir au moins 6 caractères';
+                      return 'Minimum 6 caractères';
                     }
                     return null;
                   },
                 ),
-                // Champ CIN
+                const SizedBox(height: 10),
+
+                // Prénom
                 TextFormField(
-                  controller: _cinController,
-                  decoration: const InputDecoration(labelText: 'CIN (Optionnel)'),
+                  controller: _firstNameController,
+                  decoration: const InputDecoration(labelText: 'Prénom'),
                 ),
-                // Champ Téléphone
+                const SizedBox(height: 10),
+
+                // Nom
                 TextFormField(
-                  controller: _telephoneController,
-                  decoration: const InputDecoration(labelText: 'Numéro de téléphone'),
+                  controller: _lastNameController,
+                  decoration: const InputDecoration(labelText: 'Nom'),
+                ),
+                const SizedBox(height: 10),
+
+                // Téléphone
+                TextFormField(
+                  controller: _phoneController,
+                  decoration: const InputDecoration(labelText: 'Téléphone'),
                   keyboardType: TextInputType.phone,
                 ),
-                // Liste déroulante pour le sexe
-                DropdownButtonFormField<String>(
-                  value: _selectedSexe,
-                  decoration: const InputDecoration(labelText: 'Sexe'),
-                  items: ['Homme', 'Femme']
-                      .map((sexe) => DropdownMenuItem(
-                    value: sexe,
-                    child: Text(sexe),
-                  ))
-                      .toList(),
-                  onChanged: (value) {
-                    setState(() {
-                      _selectedSexe = value;
-                    });
-                  },
-                  validator: (value) {
-                    if (value == null) {
-                      return 'Veuillez sélectionner votre sexe';
-                    }
-                    return null;
-                  },
+                const SizedBox(height: 10),
+
+                // Groupe sanguin
+                TextFormField(
+                  controller: _bloodTypeController,
+                  decoration: const InputDecoration(labelText: 'Groupe sanguin (ex: A+)'),
+                ),
+                const SizedBox(height: 10),
+
+                // Allergies
+                TextFormField(
+                  controller: _allergiesController,
+                  decoration: const InputDecoration(labelText: 'Allergies'),
+                  maxLines: 2,
+                ),
+                const SizedBox(height: 10),
+
+                // Contact d'urgence
+                TextFormField(
+                  controller: _emergencyContactController,
+                  decoration: const InputDecoration(labelText: 'Contact d\'urgence'),
+                ),
+                const SizedBox(height: 10),
+
+                // Téléphone d'urgence
+                TextFormField(
+                  controller: _emergencyPhoneController,
+                  decoration: const InputDecoration(labelText: 'Téléphone d\'urgence'),
+                  keyboardType: TextInputType.phone,
                 ),
                 const SizedBox(height: 20),
 
@@ -129,34 +142,35 @@ class _RegisterScreenState extends State<RegisterScreen> {
                     : ElevatedButton(
                   onPressed: () {
                     if (_formKey.currentState!.validate()) {
-                      // 1. Créer l'objet Utilisateur
-                      final utilisateur = Utilisateur(
-                        id: 0, // 0 car pas encore créé en base
-                        nom: _nomController.text,
-                        prenom: _prenomController.text,
+                      final request = RegisterRequest(
+                        username: _usernameController.text,
                         email: _emailController.text,
-                        CIN: _cinController.text.isEmpty ? null : _cinController.text,
                         password: _passwordController.text,
-                        numeroTel: _telephoneController.text.isEmpty ? null : _telephoneController.text,
-                        dateNaissance: null, // Ajouter un sélecteur de date plus tard
-                        createdAt: DateTime.now(),
-                        isActif: true,
+                        first_name: _firstNameController.text.isEmpty
+                            ? null
+                            : _firstNameController.text,
+                        last_name: _lastNameController.text.isEmpty
+                            ? null
+                            : _lastNameController.text,
+                        phone: _phoneController.text.isEmpty
+                            ? null
+                            : _phoneController.text,
+                        role: "PATIENT",
+                        blood_type: _bloodTypeController.text.isEmpty
+                            ? null
+                            : _bloodTypeController.text,
+                        allergies: _allergiesController.text.isEmpty
+                            ? null
+                            : _allergiesController.text,
+                        emergency_contact: _emergencyContactController.text.isEmpty
+                            ? null
+                            : _emergencyContactController.text,
+                        emergency_phone: _emergencyPhoneController.text.isEmpty
+                            ? null
+                            : _emergencyPhoneController.text,
                       );
 
-                      // 2. Créer l'objet Patient
-                      final patient = Patient(
-                        idPatient: 0, // 0 car pas encore créé en base
-                        sexe: _selectedSexe!,
-                        groupeSanguin: null, // À ajouter dans le formulaire si besoin
-                        adresse: null, // À ajouter dans le formulaire si besoin
-                        ville: null, // À ajouter dans le formulaire si besoin
-                        poids: null, // À ajouter dans le formulaire si besoin
-                        taille: null, // À ajouter dans le formulaire si besoin
-                        utilisateur: utilisateur,
-                      );
-
-                      // 3. Appeler le ViewModel pour l'inscription
-                      authViewModel.registerPatient(patient, _passwordController.text);
+                      authViewModel.registerPatient(request);
                     }
                   },
                   child: const Text("S'inscrire"),

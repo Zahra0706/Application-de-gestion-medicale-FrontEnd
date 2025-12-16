@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'services/mock_auth_service.dart';
-import 'repositories/auth_repository.dart';
 import 'view_models/auth_view_model.dart';
+import 'repositories/auth_repository.dart';
+import 'services/auth_service.dart';
+import 'services/api_auth_service.dart';
 import 'views/auth/register_screen.dart';
 
 void main() {
@@ -14,23 +15,20 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // Initialisation des dépendances (Dependency Injection)
-    final mockAuthService = MockAuthService();
-    final authRepository = AuthRepository(mockAuthService);
-    final authViewModel = AuthViewModel(authRepository);
+    final AuthService authService = ApiAuthService();
+    final AuthRepository authRepository = AuthRepository(authService);
+    final AuthViewModel authViewModel = AuthViewModel(authRepository);
 
     return MultiProvider(
       providers: [
-        ChangeNotifierProvider(create: (context) => authViewModel),
-        // Ajouter d'autres ViewModels ici plus tard
+        ChangeNotifierProvider(create: (_) => authViewModel),
       ],
       child: MaterialApp(
-        title: 'MedConnect Patient',
+        title: 'MedConnect',
         theme: ThemeData(
           primarySwatch: Colors.blue,
         ),
-        home: const RegisterScreen(), // Commencez par l'inscription
-        // home: const LoginScreen(), // Ou par la connexion
+        home: const RegisterScreen(),
       ),
     );
   }

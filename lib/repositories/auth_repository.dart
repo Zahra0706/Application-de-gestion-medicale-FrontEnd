@@ -1,4 +1,5 @@
-import '../models/patient.dart';
+import '../models/register_request.dart';
+import '../models/auth_response.dart';
 import '../services/auth_service.dart';
 
 class AuthRepository {
@@ -6,11 +7,11 @@ class AuthRepository {
 
   AuthRepository(this._authService);
 
-  Future<Patient> registerPatient(Patient patient, String password) {
-    return _authService.registerPatient(patient, password);
+  Future<AuthResponse> registerPatient(RegisterRequest request) {
+    return _authService.registerPatient(request);
   }
 
-  Future<String> login(String email, String password) {
+  Future<AuthResponse> login(String email, String password) {
     return _authService.login(email, password);
   }
 }

@@ -8,29 +8,27 @@ part of 'utilisateur.dart';
 
 Utilisateur _$UtilisateurFromJson(Map<String, dynamic> json) => Utilisateur(
   id: (json['id'] as num).toInt(),
-  nom: json['nom'] as String,
-  prenom: json['prenom'] as String,
+  username: json['username'] as String,
+  firstName: json['first_name'] as String?,
+  lastName: json['last_name'] as String?,
   email: json['email'] as String,
-  CIN: json['CIN'] as String?,
-  password: json['password'] as String,
-  numeroTel: json['numeroTel'] as String?,
-  dateNaissance: json['dateNaissance'] == null
-      ? null
-      : DateTime.parse(json['dateNaissance'] as String),
-  createdAt: DateTime.parse(json['createdAt'] as String),
-  isActif: json['isActif'] as bool,
+  phone: json['phone'] as String?,
+  role: json['role'] as String,
+  dateOfBirth: json['date_of_birth'] as String?,
+  address: json['address'] as String?,
+  isActive: json['is_active'] as bool,
 );
 
 Map<String, dynamic> _$UtilisateurToJson(Utilisateur instance) =>
     <String, dynamic>{
       'id': instance.id,
-      'nom': instance.nom,
-      'prenom': instance.prenom,
+      'username': instance.username,
+      'first_name': instance.firstName,
+      'last_name': instance.lastName,
       'email': instance.email,
-      'CIN': instance.CIN,
-      'password': instance.password,
-      'numeroTel': instance.numeroTel,
-      'dateNaissance': instance.dateNaissance?.toIso8601String(),
-      'createdAt': instance.createdAt.toIso8601String(),
-      'isActif': instance.isActif,
+      'phone': instance.phone,
+      'role': instance.role,
+      'date_of_birth': instance.dateOfBirth,
+      'address': instance.address,
+      'is_active': instance.isActive,
     };

@@ -5,30 +5,33 @@ part 'utilisateur.g.dart';
 @JsonSerializable()
 class Utilisateur {
   final int id;
-  final String nom;
-  final String prenom;
+  final String username;
+  @JsonKey(name: 'first_name')
+  final String? firstName;
+  @JsonKey(name: 'last_name')
+  final String? lastName;
   final String email;
-  final String? CIN; // Peut être null
-  final String password; // À cacher côté front après le dev
-  final String? numeroTel;
-  final DateTime? dateNaissance;
-  final DateTime createdAt;
-  final bool isActif;
+  final String? phone;
+  final String role;
+  @JsonKey(name: 'date_of_birth')
+  final String? dateOfBirth;
+  final String? address;
+  @JsonKey(name: 'is_active')
+  final bool isActive;
 
   Utilisateur({
     required this.id,
-    required this.nom,
-    required this.prenom,
+    required this.username,
+    this.firstName,
+    this.lastName,
     required this.email,
-    this.CIN,
-    required this.password,
-    this.numeroTel,
-    this.dateNaissance,
-    required this.createdAt,
-    required this.isActif,
+    this.phone,
+    required this.role,
+    this.dateOfBirth,
+    this.address,
+    required this.isActive,
   });
 
-  // Méthodes pour la sérialisation JSON (générées par build_runner)
   factory Utilisateur.fromJson(Map<String, dynamic> json) =>
       _$UtilisateurFromJson(json);
   Map<String, dynamic> toJson() => _$UtilisateurToJson(this);

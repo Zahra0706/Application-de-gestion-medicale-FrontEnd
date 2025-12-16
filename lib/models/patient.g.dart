@@ -7,25 +7,19 @@ part of 'patient.dart';
 // **************************************************************************
 
 Patient _$PatientFromJson(Map<String, dynamic> json) => Patient(
-  idPatient: (json['idPatient'] as num).toInt(),
-  sexe: json['sexe'] as String,
-  groupeSanguin: json['groupeSanguin'] as String?,
-  adresse: json['adresse'] as String?,
-  ville: json['ville'] as String?,
-  poids: (json['poids'] as num?)?.toDouble(),
-  taille: (json['taille'] as num?)?.toDouble(),
-  utilisateur: Utilisateur.fromJson(
-    json['utilisateur'] as Map<String, dynamic>,
-  ),
+  id: (json['id'] as num).toInt(),
+  user: Utilisateur.fromJson(json['user'] as Map<String, dynamic>),
+  bloodType: json['blood_type'] as String?,
+  allergies: json['allergies'] as String?,
+  emergencyContact: json['emergency_contact'] as String?,
+  emergencyPhone: json['emergency_phone'] as String?,
 );
 
 Map<String, dynamic> _$PatientToJson(Patient instance) => <String, dynamic>{
-  'idPatient': instance.idPatient,
-  'sexe': instance.sexe,
-  'groupeSanguin': instance.groupeSanguin,
-  'adresse': instance.adresse,
-  'ville': instance.ville,
-  'poids': instance.poids,
-  'taille': instance.taille,
-  'utilisateur': instance.utilisateur,
+  'id': instance.id,
+  'user': instance.user,
+  'blood_type': instance.bloodType,
+  'allergies': instance.allergies,
+  'emergency_contact': instance.emergencyContact,
+  'emergency_phone': instance.emergencyPhone,
 };

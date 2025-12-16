@@ -1,53 +1,88 @@
 import 'auth_service.dart';
+import '../models/register_request.dart';
+import '../models/auth_response.dart';
 import '../models/patient.dart';
 import '../models/utilisateur.dart';
 
 class MockAuthService implements AuthService {
   // Simule un délai réseau
-  Future<void> _simulateDelay() => Future.delayed(Duration(seconds: 2));
+  Future<void> _simulateDelay() => Future.delayed(const Duration(seconds: 2));
 
   @override
-  Future<Patient> registerPatient(Patient patient, String password) async {
+  Future<AuthResponse> registerPatient(RegisterRequest request) async {
     await _simulateDelay();
 
     // Simule une erreur si l'email existe déjà
-    if (patient.utilisateur.email == 'existe@test.com') {
+    if (request.email == 'existe@test.com') {
       throw Exception('Email déjà utilisé');
     }
 
-    // Simule une réponse réussie du serveur
-    // Le serveur aurait créé l'Utilisateur et le Patient, et renvoie le Patient complet avec son ID
-    final Patient registeredPatient = Patient(
-      idPatient: 1, // ID simulé
-      sexe: patient.sexe,
-      groupeSanguin: patient.groupeSanguin,
-      adresse: patient.adresse,
-      ville: patient.ville,
-      poids: patient.poids,
-      taille: patient.taille,
-      utilisateur: Utilisateur(
-        id: 1, // ID simulé
-        nom: patient.utilisateur.nom,
-        prenom: patient.utilisateur.prenom,
-        email: patient.utilisateur.email,
-        CIN: patient.utilisateur.CIN,
-        password: 'hidden', // Le vrai mot de passe n'est jamais renvoyé
-        numeroTel: patient.utilisateur.numeroTel,
-        dateNaissance: patient.utilisateur.dateNaissance,
-        createdAt: DateTime.now(),
-        isActif: true,
-      ),
+
+    final utilisateur = Utilisateur(
+      id: 1,
+      username: request.username,
+      firstName: request.first_name,
+      lastName: request.last_name,
+      email: request.email,
+      phone: request.phone,
+      role: request.role,
+      dateOfBirth: null,
+      address: null,
+      isActive: true,
     );
 
-    return registeredPatient;
+    final patient = Patient(
+      id: 1,
+      user: utilisateur,
+      bloodType: request.blood_type,
+      allergies: request.allergies,
+      emergencyContact: request.emergency_contact,
+      emergencyPhone: request.emergency_phone,
+    );
+
+    final authResponse = AuthResponse(
+      token: "mock_jwt_token_${request.username}",
+      user: utilisateur,
+      patient_profile: patient,
+      message: "Inscription réussie",
+    );
+
+    return authResponse;
   }
 
   @override
-  Future<String> login(String email, String password) async {
+  Future<AuthResponse> login(String email, String password) async {
     await _simulateDelay();
 
     if (email == 'patient@test.com' && password == 'password') {
-      return "mock_jwt_token_12345"; // Simule un token JWT
+      // Simule un utilisateur patient pour les tests
+      final utilisateur = Utilisateur(
+        id: 1,
+        username: 'testpatient',
+        firstName: 'Test',
+        lastName: 'Patient',
+        email: email,
+        phone: '+1234567890',
+        role: 'PATIENT',
+        dateOfBirth: null,
+        address: null,
+        isActive: true,
+      );
+
+      final patient = Patient(
+        id: 1,
+        user: utilisateur,
+        bloodType: 'A+',
+        allergies: null,
+        emergencyContact: 'Contact Urgence',
+        emergencyPhone: '+0987654321',
+      );
+
+      return AuthResponse(
+        token: "mock_jwt_token_12345",
+        user: utilisateur,
+        patient_profile: patient,
+      );
     } else {
       throw Exception('Identifiants incorrects');
     }

@@ -16,9 +16,11 @@ subprojects {
     project.layout.buildDirectory.value(newSubprojectBuildDir)
 }
 subprojects {
+    project.extra["ndkVersion"] = "27.0.12077973"
     project.evaluationDependsOn(":app")
 }
 
 tasks.register<Delete>("clean") {
     delete(rootProject.layout.buildDirectory)
 }
+

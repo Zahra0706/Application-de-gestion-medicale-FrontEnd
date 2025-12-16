@@ -1,8 +1,8 @@
-import '../models/patient.dart';
+import '../models/register_request.dart';
+import '../models/auth_response.dart';
 
 abstract class AuthService {
-  // Pour l'inscription, on envoie les données du Patient ET de l'Utilisateur
-  Future<Patient> registerPatient(Patient patient, String password);
-  Future<String> login(String email, String password); // Retourne un token JWT
+  Future<AuthResponse> registerPatient(RegisterRequest request);
+  Future<AuthResponse> login(String email, String password);
   Future<void> logout();
 }
