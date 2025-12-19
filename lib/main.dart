@@ -4,7 +4,7 @@ import 'view_models/auth_view_model.dart';
 import 'repositories/auth_repository.dart';
 import 'services/auth_service.dart';
 import 'services/api_auth_service.dart';
-import 'views/auth/register_screen.dart';
+import 'views/auth/login_patient_page.dart';
 
 void main() {
   runApp(const MyApp());
@@ -20,15 +20,11 @@ class MyApp extends StatelessWidget {
     final AuthViewModel authViewModel = AuthViewModel(authRepository);
 
     return MultiProvider(
-      providers: [
-        ChangeNotifierProvider(create: (_) => authViewModel),
-      ],
+      providers: [ChangeNotifierProvider(create: (_) => authViewModel)],
       child: MaterialApp(
         title: 'MedConnect',
-        theme: ThemeData(
-          primarySwatch: Colors.blue,
-        ),
-        home: const RegisterScreen(),
+        theme: ThemeData(primarySwatch: Colors.blue),
+        home: const LoginPatientPage(),
       ),
     );
   }

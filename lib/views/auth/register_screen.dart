@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../../models/register_request.dart';
 import '../../view_models/auth_view_model.dart';
+import 'login_patient_page.dart';
 
 class RegisterScreen extends StatefulWidget {
   const RegisterScreen({super.key});
@@ -15,171 +16,394 @@ class _RegisterScreenState extends State<RegisterScreen> {
   final _usernameController = TextEditingController();
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
+  final _confirmPasswordController = TextEditingController(); // Added
   final _firstNameController = TextEditingController();
   final _lastNameController = TextEditingController();
   final _phoneController = TextEditingController();
-  final _bloodTypeController = TextEditingController();
+  // removed bloodTypeController in favor of a variable
   final _allergiesController = TextEditingController();
   final _emergencyContactController = TextEditingController();
   final _emergencyPhoneController = TextEditingController();
+
+  String? _selectedBloodType;
+  final List<String> _bloodTypes = [
+    'A+',
+    'A-',
+    'B+',
+    'B-',
+    'AB+',
+    'AB-',
+    'O+',
+    'O-',
+  ];
+
+  bool _obscurePassword = true; // Added
+  bool _obscureConfirmPassword = true; // Added
 
   @override
   Widget build(BuildContext context) {
     final authViewModel = Provider.of<AuthViewModel>(context);
 
+    // Medical Blue Palette
+    const primaryColor = Color(0xFF86B7D7);
+    const lightBackground = Color(0xFFC3E2F6);
+
     return Scaffold(
-      appBar: AppBar(title: const Text('Inscription Patient')),
-      body: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: Form(
-          key: _formKey,
-          child: SingleChildScrollView(
-            child: Column(
-              children: [
-                // Username (obligatoire)
-                TextFormField(
-                  controller: _usernameController,
-                  decoration: const InputDecoration(labelText: 'Nom d\'utilisateur*'),
-                  validator: (value) {
-                    if (value == null || value.isEmpty) {
-                      return 'Ce champ est obligatoire';
-                    }
-                    return null;
-                  },
-                ),
-                const SizedBox(height: 10),
+      backgroundColor: lightBackground,
+      appBar: AppBar(
+        title: const Text('Inscription Patient'),
+        backgroundColor: primaryColor,
+        foregroundColor: Colors.white,
+        elevation: 0,
+      ),
+      body: Center(
+        child: SingleChildScrollView(
+          padding: const EdgeInsets.all(20.0),
+          child: ConstrainedBox(
+            constraints: const BoxConstraints(maxWidth: 600),
+            child: Card(
+              elevation: 4,
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(16),
+              ),
+              child: Padding(
+                padding: const EdgeInsets.all(24.0),
+                child: Form(
+                  key: _formKey,
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.stretch,
+                    children: [
+                      Text(
+                        'Créer un compte',
+                        style: TextStyle(
+                          fontSize: 24,
+                          fontWeight: FontWeight.bold,
+                          color: primaryColor,
+                        ),
+                        textAlign: TextAlign.center,
+                      ),
+                      const SizedBox(height: 24),
 
-                // Email
-                TextFormField(
-                  controller: _emailController,
-                  decoration: const InputDecoration(labelText: 'Email*'),
-                  keyboardType: TextInputType.emailAddress,
-                  validator: (value) {
-                    if (value == null || value.isEmpty || !value.contains('@')) {
-                      return 'Email invalide';
-                    }
-                    return null;
-                  },
-                ),
-                const SizedBox(height: 10),
+                      // Section: Informations de Compte
+                      _buildSectionHeader(
+                        'Informations de Compte',
+                        primaryColor,
+                      ),
+                      const SizedBox(height: 16),
+                      TextFormField(
+                        controller: _usernameController,
+                        decoration: _buildInputDecoration(
+                          'Nom d\'utilisateur*',
+                          Icons.person,
+                          primaryColor,
+                        ),
+                        validator: (value) =>
+                            value == null || value.isEmpty ? 'Requis' : null,
+                      ),
+                      const SizedBox(height: 12),
+                      TextFormField(
+                        controller: _emailController,
+                        decoration: _buildInputDecoration(
+                          'Email*',
+                          Icons.email,
+                          primaryColor,
+                        ),
+                        keyboardType: TextInputType.emailAddress,
+                        validator: (value) {
+                          if (value == null || value.isEmpty) return 'Requis';
+                          if (!value.contains('@')) return 'Email invalide';
+                          return null;
+                        },
+                      ),
+                      const SizedBox(height: 12),
+                      TextFormField(
+                        controller: _passwordController,
+                        decoration:
+                            _buildInputDecoration(
+                              'Mot de passe*',
+                              Icons.lock,
+                              primaryColor,
+                            ).copyWith(
+                              suffixIcon: IconButton(
+                                icon: Icon(
+                                  _obscurePassword
+                                      ? Icons.visibility
+                                      : Icons.visibility_off,
+                                  color: primaryColor,
+                                ),
+                                onPressed: () {
+                                  setState(() {
+                                    _obscurePassword = !_obscurePassword;
+                                  });
+                                },
+                              ),
+                            ),
+                        obscureText: _obscurePassword,
+                        validator: (value) =>
+                            (value == null || value.length < 6)
+                            ? 'Min 6 caractères'
+                            : null,
+                      ),
+                      const SizedBox(height: 12),
+                      TextFormField(
+                        controller: _confirmPasswordController,
+                        decoration:
+                            _buildInputDecoration(
+                              'Confirmer mot de passe*',
+                              Icons.lock_outline,
+                              primaryColor,
+                            ).copyWith(
+                              suffixIcon: IconButton(
+                                icon: Icon(
+                                  _obscureConfirmPassword
+                                      ? Icons.visibility
+                                      : Icons.visibility_off,
+                                  color: primaryColor,
+                                ),
+                                onPressed: () {
+                                  setState(() {
+                                    _obscureConfirmPassword =
+                                        !_obscureConfirmPassword;
+                                  });
+                                },
+                              ),
+                            ),
+                        obscureText: _obscureConfirmPassword,
+                        validator: (value) {
+                          if (value == null || value.isEmpty) return 'Requis';
+                          if (value != _passwordController.text)
+                            return 'Les mots de passe ne correspondent pas';
+                          return null;
+                        },
+                      ),
+                      const SizedBox(height: 24),
 
-                // Mot de passe
-                TextFormField(
-                  controller: _passwordController,
-                  decoration: const InputDecoration(labelText: 'Mot de passe*'),
-                  obscureText: true,
-                  validator: (value) {
-                    if (value == null || value.length < 6) {
-                      return 'Minimum 6 caractères';
-                    }
-                    return null;
-                  },
-                ),
-                const SizedBox(height: 10),
+                      // Section: Informations Personnelles
+                      _buildSectionHeader(
+                        'Informations Personnelles',
+                        primaryColor,
+                      ),
+                      const SizedBox(height: 16),
+                      Row(
+                        children: [
+                          Expanded(
+                            child: TextFormField(
+                              controller: _firstNameController,
+                              decoration: _buildInputDecoration(
+                                'Prénom',
+                                Icons.person_outline,
+                                primaryColor,
+                              ),
+                            ),
+                          ),
+                          const SizedBox(width: 12),
+                          Expanded(
+                            child: TextFormField(
+                              controller: _lastNameController,
+                              decoration: _buildInputDecoration(
+                                'Nom',
+                                Icons.person_outline,
+                                primaryColor,
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                      const SizedBox(height: 12),
+                      TextFormField(
+                        controller: _phoneController,
+                        decoration: _buildInputDecoration(
+                          'Téléphone',
+                          Icons.phone,
+                          primaryColor,
+                        ),
+                        keyboardType: TextInputType.phone,
+                      ),
+                      const SizedBox(height: 12),
+                      DropdownButtonFormField<String>(
+                        value: _selectedBloodType,
+                        decoration: _buildInputDecoration(
+                          'Groupe sanguin',
+                          Icons.bloodtype,
+                          primaryColor,
+                        ),
+                        items: _bloodTypes
+                            .map(
+                              (type) => DropdownMenuItem(
+                                value: type,
+                                child: Text(type),
+                              ),
+                            )
+                            .toList(),
+                        onChanged: (value) =>
+                            setState(() => _selectedBloodType = value),
+                      ),
+                      const SizedBox(height: 12),
+                      TextFormField(
+                        controller: _allergiesController,
+                        decoration: _buildInputDecoration(
+                          'Allergies',
+                          Icons.warning_amber,
+                          primaryColor,
+                        ),
+                        maxLines: 2,
+                      ),
+                      const SizedBox(height: 24),
 
-                // Prénom
-                TextFormField(
-                  controller: _firstNameController,
-                  decoration: const InputDecoration(labelText: 'Prénom'),
-                ),
-                const SizedBox(height: 10),
+                      // Section: Urgence
+                      _buildSectionHeader('Contact d\'urgence', primaryColor),
+                      const SizedBox(height: 16),
+                      TextFormField(
+                        controller: _emergencyContactController,
+                        decoration: _buildInputDecoration(
+                          'Nom du contact',
+                          Icons.contact_emergency,
+                          primaryColor,
+                        ),
+                      ),
+                      const SizedBox(height: 12),
+                      TextFormField(
+                        controller: _emergencyPhoneController,
+                        decoration: _buildInputDecoration(
+                          'Téléphone urgence',
+                          Icons.phone_in_talk,
+                          primaryColor,
+                        ),
+                        keyboardType: TextInputType.phone,
+                      ),
+                      const SizedBox(height: 32),
 
-                // Nom
-                TextFormField(
-                  controller: _lastNameController,
-                  decoration: const InputDecoration(labelText: 'Nom'),
-                ),
-                const SizedBox(height: 10),
+                      if (authViewModel.errorMessage != null)
+                        Padding(
+                          padding: const EdgeInsets.only(bottom: 16.0),
+                          child: Text(
+                            authViewModel.errorMessage!,
+                            style: const TextStyle(
+                              color: Colors.red,
+                              fontWeight: FontWeight.bold,
+                            ),
+                            textAlign: TextAlign.center,
+                          ),
+                        ),
 
-                // Téléphone
-                TextFormField(
-                  controller: _phoneController,
-                  decoration: const InputDecoration(labelText: 'Téléphone'),
-                  keyboardType: TextInputType.phone,
-                ),
-                const SizedBox(height: 10),
+                      authViewModel.isLoading
+                          ? const Center(child: CircularProgressIndicator())
+                          : ElevatedButton(
+                              onPressed: () async {
+                                if (_formKey.currentState!.validate()) {
+                                  final request = RegisterRequest(
+                                    username: _usernameController.text,
+                                    email: _emailController.text,
+                                    password: _passwordController.text,
+                                    first_name:
+                                        _firstNameController.text.isEmpty
+                                        ? null
+                                        : _firstNameController.text,
+                                    last_name: _lastNameController.text.isEmpty
+                                        ? null
+                                        : _lastNameController.text,
+                                    phone: _phoneController.text.isEmpty
+                                        ? null
+                                        : _phoneController.text,
+                                    role: "PATIENT",
+                                    blood_type: _selectedBloodType,
+                                    allergies: _allergiesController.text.isEmpty
+                                        ? null
+                                        : _allergiesController.text,
+                                    emergency_contact:
+                                        _emergencyContactController.text.isEmpty
+                                        ? null
+                                        : _emergencyContactController.text,
+                                    emergency_phone:
+                                        _emergencyPhoneController.text.isEmpty
+                                        ? null
+                                        : _emergencyPhoneController.text,
+                                  );
 
-                // Groupe sanguin
-                TextFormField(
-                  controller: _bloodTypeController,
-                  decoration: const InputDecoration(labelText: 'Groupe sanguin (ex: A+)'),
-                ),
-                const SizedBox(height: 10),
+                                  final success = await authViewModel
+                                      .registerPatient(request);
 
-                // Allergies
-                TextFormField(
-                  controller: _allergiesController,
-                  decoration: const InputDecoration(labelText: 'Allergies'),
-                  maxLines: 2,
-                ),
-                const SizedBox(height: 10),
-
-                // Contact d'urgence
-                TextFormField(
-                  controller: _emergencyContactController,
-                  decoration: const InputDecoration(labelText: 'Contact d\'urgence'),
-                ),
-                const SizedBox(height: 10),
-
-                // Téléphone d'urgence
-                TextFormField(
-                  controller: _emergencyPhoneController,
-                  decoration: const InputDecoration(labelText: 'Téléphone d\'urgence'),
-                  keyboardType: TextInputType.phone,
-                ),
-                const SizedBox(height: 20),
-
-                // Affichage des erreurs
-                if (authViewModel.errorMessage != null)
-                  Text(
-                    authViewModel.errorMessage!,
-                    style: const TextStyle(color: Colors.red),
+                                  if (success && mounted) {
+                                    Navigator.pushReplacement(
+                                      context,
+                                      MaterialPageRoute(
+                                        builder: (context) =>
+                                            const LoginPatientPage(),
+                                      ),
+                                    );
+                                    ScaffoldMessenger.of(context).showSnackBar(
+                                      const SnackBar(
+                                        content: Text(
+                                          'Inscription réussie ! Veuillez vous connecter.',
+                                        ),
+                                        backgroundColor: Colors.green,
+                                      ),
+                                    );
+                                  }
+                                }
+                              },
+                              style: ElevatedButton.styleFrom(
+                                backgroundColor: primaryColor,
+                                foregroundColor: Colors.white,
+                                padding: const EdgeInsets.symmetric(
+                                  vertical: 16,
+                                ),
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(8),
+                                ),
+                                elevation: 2,
+                              ),
+                              child: const Text(
+                                "S'INSCRIRE",
+                                style: TextStyle(
+                                  fontSize: 16,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
+                            ),
+                    ],
                   ),
-
-                // Bouton d'inscription
-                authViewModel.isLoading
-                    ? const CircularProgressIndicator()
-                    : ElevatedButton(
-                  onPressed: () {
-                    if (_formKey.currentState!.validate()) {
-                      final request = RegisterRequest(
-                        username: _usernameController.text,
-                        email: _emailController.text,
-                        password: _passwordController.text,
-                        first_name: _firstNameController.text.isEmpty
-                            ? null
-                            : _firstNameController.text,
-                        last_name: _lastNameController.text.isEmpty
-                            ? null
-                            : _lastNameController.text,
-                        phone: _phoneController.text.isEmpty
-                            ? null
-                            : _phoneController.text,
-                        role: "PATIENT",
-                        blood_type: _bloodTypeController.text.isEmpty
-                            ? null
-                            : _bloodTypeController.text,
-                        allergies: _allergiesController.text.isEmpty
-                            ? null
-                            : _allergiesController.text,
-                        emergency_contact: _emergencyContactController.text.isEmpty
-                            ? null
-                            : _emergencyContactController.text,
-                        emergency_phone: _emergencyPhoneController.text.isEmpty
-                            ? null
-                            : _emergencyPhoneController.text,
-                      );
-
-                      authViewModel.registerPatient(request);
-                    }
-                  },
-                  child: const Text("S'inscrire"),
                 ),
-              ],
+              ),
             ),
           ),
         ),
       ),
+    );
+  }
+
+  InputDecoration _buildInputDecoration(
+    String label,
+    IconData icon,
+    Color color,
+  ) {
+    return InputDecoration(
+      labelText: label,
+      prefixIcon: Icon(icon, color: color),
+      border: OutlineInputBorder(borderRadius: BorderRadius.circular(8)),
+      contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+      filled: true,
+      fillColor: const Color(
+        0xFFF5F9FC,
+      ), // Very light blue/grey for input background
+    );
+  }
+
+  Widget _buildSectionHeader(String title, Color color) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          title.toUpperCase(),
+          style: TextStyle(
+            color: color,
+            fontWeight: FontWeight.bold,
+            fontSize: 14,
+            letterSpacing: 1.0,
+          ),
+        ),
+        Divider(color: color.withOpacity(0.5), thickness: 1),
+      ],
     );
   }
 }

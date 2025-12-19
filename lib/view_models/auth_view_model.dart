@@ -18,7 +18,7 @@ class AuthViewModel with ChangeNotifier {
   AuthResponse? get authResponse => _authResponse;
 
   // Inscription
-  Future<void> registerPatient(RegisterRequest request) async {
+  Future<bool> registerPatient(RegisterRequest request) async {
     _isLoading = true;
     _errorMessage = null;
     notifyListeners();
@@ -29,9 +29,12 @@ class AuthViewModel with ChangeNotifier {
       if (_authResponse?.token != null) {
         // TODO: Sauvegarder token avec shared_preferences
         print('Token reçu: ${_authResponse!.token}');
+        return true;
       }
+      return false;
     } catch (e) {
       _errorMessage = e.toString();
+      return false;
     } finally {
       _isLoading = false;
       notifyListeners();
