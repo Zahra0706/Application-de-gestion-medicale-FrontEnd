@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../../view_models/auth_view_model.dart';
-import 'register_screen.dart';
+import 'register_patient_screen.dart';
 
 class LoginPatientPage extends StatefulWidget {
   const LoginPatientPage({super.key});
@@ -28,7 +28,7 @@ class _LoginPatientPageState extends State<LoginPatientPage> {
   Widget build(BuildContext context) {
     final authViewModel = Provider.of<AuthViewModel>(context);
 
-    // Medical Blue Palette (Consistent with RegisterScreen)
+    // Medical Blue Palette
     const primaryColor = Color(0xFF86B7D7);
     const lightBackground = Color(0xFFC3E2F6);
 
@@ -166,7 +166,8 @@ class _LoginPatientPageState extends State<LoginPatientPage> {
                           Navigator.push(
                             context,
                             MaterialPageRoute(
-                              builder: (context) => const RegisterScreen(),
+                              builder: (context) =>
+                                  const RegisterPatientScreen(),
                             ),
                           );
                         },

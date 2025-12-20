@@ -41,14 +41,16 @@ class AuthViewModel with ChangeNotifier {
     }
   }
 
-  // Connexion
+  // Connexion (Legacy/Generic - defaulting to Patient or deprecated)
+  // Utiliser PatientAuthViewModel ou DoctorAuthViewModel pour les nouvelles implémentations.
   Future<void> login(String email, String password) async {
     _isLoading = true;
     _errorMessage = null;
     notifyListeners();
 
     try {
-      _authResponse = await _authRepository.login(email, password);
+      // Defaulting to patient for backward compatibility if strict needed
+      _authResponse = await _authRepository.loginPatient(email, password);
       if (_authResponse?.token != null) {
         // TODO: Sauvegarder token
         print('Token reçu: ${_authResponse!.token}');

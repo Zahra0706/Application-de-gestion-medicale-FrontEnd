@@ -15,8 +15,13 @@ class ApiAuthService implements AuthService {
   }
 
   @override
-  Future<AuthResponse> login(String email, String password) async {
-    return await _apiService.login(email, password);
+  Future<AuthResponse> loginPatient(String email, String password) async {
+    return await _apiService.loginPatient(email, password);
+  }
+
+  @override
+  Future<AuthResponse> loginDoctor(String email, String password) async {
+    return await _apiService.loginDoctor(email, password);
   }
 
   @override

@@ -2,25 +2,24 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../../models/register_request.dart';
 import '../../view_models/auth_view_model.dart';
-import 'login_patient_page.dart';
+import 'combined_login_screen.dart';
 
-class RegisterScreen extends StatefulWidget {
-  const RegisterScreen({super.key});
+class RegisterPatientScreen extends StatefulWidget {
+  const RegisterPatientScreen({super.key});
 
   @override
-  State<RegisterScreen> createState() => _RegisterScreenState();
+  State<RegisterPatientScreen> createState() => _RegisterPatientScreenState();
 }
 
-class _RegisterScreenState extends State<RegisterScreen> {
+class _RegisterPatientScreenState extends State<RegisterPatientScreen> {
   final _formKey = GlobalKey<FormState>();
   final _usernameController = TextEditingController();
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
-  final _confirmPasswordController = TextEditingController(); // Added
+  final _confirmPasswordController = TextEditingController();
   final _firstNameController = TextEditingController();
   final _lastNameController = TextEditingController();
   final _phoneController = TextEditingController();
-  // removed bloodTypeController in favor of a variable
   final _allergiesController = TextEditingController();
   final _emergencyContactController = TextEditingController();
   final _emergencyPhoneController = TextEditingController();
@@ -37,16 +36,16 @@ class _RegisterScreenState extends State<RegisterScreen> {
     'O-',
   ];
 
-  bool _obscurePassword = true; // Added
-  bool _obscureConfirmPassword = true; // Added
+  bool _obscurePassword = true;
+  bool _obscureConfirmPassword = true;
 
   @override
   Widget build(BuildContext context) {
     final authViewModel = Provider.of<AuthViewModel>(context);
 
     // Medical Blue Palette
-    const primaryColor = Color(0xFF86B7D7);
-    const lightBackground = Color(0xFFC3E2F6);
+    const primaryColor = Color.fromARGB(255, 86, 121, 145);
+    const lightBackground = Color.fromARGB(255, 213, 231, 243);
 
     return Scaffold(
       backgroundColor: lightBackground,
@@ -328,7 +327,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                                       context,
                                       MaterialPageRoute(
                                         builder: (context) =>
-                                            const LoginPatientPage(),
+                                            const CombinedLoginScreen(),
                                       ),
                                     );
                                     ScaffoldMessenger.of(context).showSnackBar(
@@ -361,6 +360,32 @@ class _RegisterScreenState extends State<RegisterScreen> {
                                 ),
                               ),
                             ),
+
+                      const SizedBox(height: 16),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          const Text("Déjà un compte ? "),
+                          GestureDetector(
+                            onTap: () {
+                              Navigator.pushReplacement(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (context) =>
+                                      const CombinedLoginScreen(),
+                                ),
+                              );
+                            },
+                            child: const Text(
+                              "Se connecter",
+                              style: TextStyle(
+                                color: Color.fromARGB(255, 86, 121, 145),
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
                     ],
                   ),
                 ),

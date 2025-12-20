@@ -17,7 +17,6 @@ class MockAuthService implements AuthService {
       throw Exception('Email déjà utilisé');
     }
 
-
     final utilisateur = Utilisateur(
       id: 1,
       username: request.username,
@@ -51,7 +50,7 @@ class MockAuthService implements AuthService {
   }
 
   @override
-  Future<AuthResponse> login(String email, String password) async {
+  Future<AuthResponse> loginPatient(String email, String password) async {
     await _simulateDelay();
 
     if (email == 'patient@test.com' && password == 'password') {
@@ -79,9 +78,40 @@ class MockAuthService implements AuthService {
       );
 
       return AuthResponse(
-        token: "mock_jwt_token_12345",
+        token: "mock_jwt_token_patient_12345",
         user: utilisateur,
         patient_profile: patient,
+      );
+    } else {
+      throw Exception('Identifiants incorrects');
+    }
+  }
+
+  @override
+  Future<AuthResponse> loginDoctor(String email, String password) async {
+    await _simulateDelay();
+
+    if (email == 'doctor@test.com' && password == 'password') {
+      // Simule un utilisateur médecin
+      final utilisateur = Utilisateur(
+        id: 2,
+        username: 'testdoctor',
+        firstName: 'Test',
+        lastName: 'Doctor',
+        email: email,
+        phone: '+1234567890',
+        role: 'DOCTOR',
+        dateOfBirth: null,
+        address: null,
+        isActive: true,
+      );
+
+      // Note: AuthResponse structure might need doctor_profile if separate,
+      // but assuming consistent response structure or patient_profile is null.
+      return AuthResponse(
+        token: "mock_jwt_token_doctor_67890",
+        user: utilisateur,
+        patient_profile: null,
       );
     } else {
       throw Exception('Identifiants incorrects');
