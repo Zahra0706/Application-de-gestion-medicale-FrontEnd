@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../../../view_models/patient_auth_view_model.dart';
 import '../register_patient_screen.dart';
-import '../../patient_dashboard_screen.dart';
+import '../../patient/patient_dashboard_screen.dart';
 
 class PatientLoginForm extends StatefulWidget {
   const PatientLoginForm({Key? key}) : super(key: key);

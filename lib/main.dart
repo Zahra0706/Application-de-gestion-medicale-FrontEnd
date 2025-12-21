@@ -3,6 +3,7 @@ import 'package:provider/provider.dart';
 import 'view_models/patient_auth_view_model.dart';
 import 'view_models/doctor_auth_view_model.dart';
 import 'view_models/patient_dashboard_view_model.dart';
+import 'view_models/appointment_view_model.dart';
 import 'view_models/auth_view_model.dart';
 import 'views/auth/combined_login_screen.dart';
 import 'repositories/auth_repository.dart';
@@ -33,6 +34,7 @@ class MyApp extends StatelessWidget {
     );
     final PatientDashboardViewModel patientDashboardViewModel =
         PatientDashboardViewModel();
+    final AppointmentViewModel appointmentViewModel = AppointmentViewModel();
 
     return MultiProvider(
       providers: [
@@ -40,6 +42,7 @@ class MyApp extends StatelessWidget {
         ChangeNotifierProvider(create: (_) => patientAuthViewModel),
         ChangeNotifierProvider(create: (_) => doctorAuthViewModel),
         ChangeNotifierProvider(create: (_) => patientDashboardViewModel),
+        ChangeNotifierProvider(create: (_) => appointmentViewModel),
       ],
       child: MaterialApp(
         title: 'MedConnect',

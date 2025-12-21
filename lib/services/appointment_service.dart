@@ -1,0 +1,55 @@
+import 'dart:convert';
+import 'package:http/http.dart' as http;
+import '../models/appointment.dart';
+import 'api_service.dart';
+
+class AppointmentService {
+  Future<List<Appointment>> getAppointments(String token) async {
+    final url = Uri.parse('${ApiService.apiPrefix}/appointments/');
+    final response = await http.get(
+      url,
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': 'Token $token',
+      },
+    );
+
+    if (response.statusCode == 200) {
+      final List<dynamic> body = json.decode(response.body);
+      return body.map((e) => Appointment.fromJson(e)).toList();
+    } else {
+      throw Exception('Erreur de chargement des rendez-vous');
+    }
+  }
+
+  Future<Appointment> createAppointment(
+    String token,
+    int doctorId,
+    DateTime date,
+    String reason,
+  ) async {
+    final url = Uri.parse('${ApiService.apiPrefix}/appointments/');
+    final response = await http.post(
+      url,
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': 'Token $token',
+      },
+      body: json.encode({
+        'doctor': doctorId,
+        'date': date.toIso8601String(),
+        'reason': reason,
+      }),
+    );
+
+    if (response.statusCode == 201) {
+      return Appointment.fromJson(json.decode(response.body));
+    } else {
+      final errorBody = json.decode(response.body);
+      throw Exception(
+        errorBody['non_field_errors']?[0] ??
+            'Erreur lors de la prise de rendez-vous',
+      );
+    }
+  }
+}

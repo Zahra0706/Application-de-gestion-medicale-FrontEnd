@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import '../../view_models/patient_dashboard_view_model.dart';
-import '../../view_models/patient_auth_view_model.dart';
-import 'auth/combined_login_screen.dart';
+import '../../../view_models/patient_dashboard_view_model.dart';
+import '../../../view_models/patient_auth_view_model.dart';
+import '../auth/combined_login_screen.dart';
+import 'appointments/appointment_list_screen.dart';
+import 'appointments/book_appointment_screen.dart';
 
 class PatientDashboardScreen extends StatefulWidget {
   const PatientDashboardScreen({Key? key}) : super(key: key);
@@ -160,7 +162,12 @@ class _PatientDashboardScreenState extends State<PatientDashboardScreen> {
           BottomNavigationBarItem(icon: Icon(Icons.person), label: 'Profil'),
         ],
         onTap: (index) {
-          // Handle navigation
+          if (index == 1) {
+            Navigator.push(
+              context,
+              MaterialPageRoute(builder: (_) => const AppointmentListScreen()),
+            );
+          }
         },
       ),
     );
@@ -219,7 +226,15 @@ class _PatientDashboardScreenState extends State<PatientDashboardScreen> {
           ListTile(
             leading: const Icon(Icons.calendar_today),
             title: const Text('Rendez-vous'),
-            onTap: () {},
+            onTap: () {
+              Navigator.pop(context);
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (_) => const AppointmentListScreen(),
+                ),
+              );
+            },
           ),
           const Divider(),
           ListTile(
@@ -377,7 +392,16 @@ class _PatientDashboardScreenState extends State<PatientDashboardScreen> {
       mainAxisSpacing: 16,
       childAspectRatio: 1.5,
       children: [
-        _buildActionCard(context, "Prendre RDV", Icons.add_alarm, Colors.blue),
+        _buildActionCard(
+          context,
+          "Prendre RDV",
+          Icons.add_alarm,
+          Colors.blue,
+          () => Navigator.push(
+            context,
+            MaterialPageRoute(builder: (_) => const BookAppointmentScreen()),
+          ),
+        ),
         _buildActionCard(
           context,
           "Mes Ordonnances",
@@ -399,13 +423,14 @@ class _PatientDashboardScreenState extends State<PatientDashboardScreen> {
     BuildContext context,
     String title,
     IconData icon,
-    Color color,
-  ) {
+    Color color, [
+    VoidCallback? onTap,
+  ]) {
     return Card(
       elevation: 2,
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
       child: InkWell(
-        onTap: () {},
+        onTap: onTap ?? () {},
         borderRadius: BorderRadius.circular(12),
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
