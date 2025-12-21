@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:medconnect_app/views/patient/appointments/book_appointment_screen.dart';
 import 'package:provider/provider.dart';
 import '../../../view_models/appointment_view_model.dart';
 import '../../../view_models/patient_auth_view_model.dart';
@@ -54,6 +55,8 @@ class _AppointmentListScreenState extends State<AppointmentListScreen>
         bottom: TabBar(
           controller: _tabController,
           indicatorColor: Colors.white,
+          labelColor: Colors.white,
+          unselectedLabelColor: Colors.white.withOpacity(0.5),
           tabs: const [
             Tab(text: 'À venir'),
             Tab(text: 'Passés'),
@@ -82,7 +85,12 @@ class _AppointmentListScreenState extends State<AppointmentListScreen>
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: () {
-          // Navigate to BookAppointmentScreen (Placeholder for now)
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (_) => const BookAppointmentScreen(),
+            ),
+          );
         },
         backgroundColor: const Color(0xFF567991),
         child: const Icon(Icons.add),

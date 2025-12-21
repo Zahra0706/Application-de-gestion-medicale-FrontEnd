@@ -92,6 +92,7 @@ class _BookAppointmentScreenState extends State<BookAppointmentScreen> {
                   onPressed: details.onStepContinue,
                   style: ElevatedButton.styleFrom(
                     backgroundColor: const Color(0xFF567991),
+                    foregroundColor: Colors.white,
                   ),
                   child: const Text('Suivant'),
                 ),
