@@ -1,10 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import '../../../view_models/patient_dashboard_view_model.dart';
-import '../../../view_models/patient_auth_view_model.dart';
+import '../../view_models/patient/patient_dashboard_view_model.dart';
+import '../../view_models/patient_auth_view_model.dart';
 import '../auth/combined_login_screen.dart';
 import 'appointments/appointment_list_screen.dart';
 import 'appointments/book_appointment_screen.dart';
+import 'patient_profile_screen.dart';
 
 class PatientDashboardScreen extends StatefulWidget {
   const PatientDashboardScreen({Key? key}) : super(key: key);
@@ -167,6 +168,11 @@ class _PatientDashboardScreenState extends State<PatientDashboardScreen> {
               context,
               MaterialPageRoute(builder: (_) => const AppointmentListScreen()),
             );
+          } else if (index == 4) {
+            Navigator.push(
+              context,
+              MaterialPageRoute(builder: (_) => const PatientProfileScreen()),
+            );
           }
         },
       ),
@@ -211,7 +217,13 @@ class _PatientDashboardScreenState extends State<PatientDashboardScreen> {
           ListTile(
             leading: const Icon(Icons.person),
             title: const Text('Mon profil'),
-            onTap: () {},
+            onTap: () {
+              Navigator.pop(context);
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (_) => const PatientProfileScreen()),
+              );
+            },
           ),
           const Divider(),
           const Padding(

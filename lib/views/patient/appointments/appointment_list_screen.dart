@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:medconnect_app/views/patient/appointments/book_appointment_screen.dart';
 import 'package:provider/provider.dart';
-import '../../../view_models/appointment_view_model.dart';
+import '../../../view_models/patient/appointment_view_model.dart';
 import '../../../view_models/patient_auth_view_model.dart';
 import '../../../models/appointment.dart';
 

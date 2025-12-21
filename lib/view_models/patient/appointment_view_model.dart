@@ -1,6 +1,6 @@
 import 'package:flutter/foundation.dart';
-import '../models/appointment.dart';
-import '../services/appointment_service.dart';
+import '../../models/appointment.dart';
+import '../../services/appointment_service.dart';
 
 class AppointmentViewModel with ChangeNotifier {
   final AppointmentService _appointmentService = AppointmentService();

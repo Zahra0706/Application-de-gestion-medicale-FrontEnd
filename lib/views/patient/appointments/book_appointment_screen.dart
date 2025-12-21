@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../../../view_models/patient_auth_view_model.dart';
 import '../../../services/doctor_service.dart';
-import '../../../view_models/appointment_view_model.dart';
+import '../../../view_models/patient/appointment_view_model.dart';
 import '../../../models/doctor.dart';
 
 class BookAppointmentScreen extends StatefulWidget {

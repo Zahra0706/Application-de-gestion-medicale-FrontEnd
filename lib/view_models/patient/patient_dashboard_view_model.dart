@@ -1,6 +1,6 @@
 import 'package:flutter/foundation.dart';
-import '../models/patient_dashboard_data.dart';
-import '../services/api_patient_dashboard_service.dart';
+import '../../models/patient_dashboard_data.dart';
+import '../../services/api_patient_dashboard_service.dart';
 
 class PatientDashboardViewModel with ChangeNotifier {
   final ApiPatientDashboardService _dashboardService =

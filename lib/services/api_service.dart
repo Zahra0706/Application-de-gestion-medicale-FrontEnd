@@ -2,9 +2,10 @@ import 'dart:convert';
 import 'package:http/http.dart' as http;
 import '../models/register_request.dart';
 import '../models/auth_response.dart';
+import '../models/patient_profile_model.dart';
 
 class ApiService {
-  static const String baseUrl = "http://192.168.0.159:8000";
+  static const String baseUrl = "http://192.168.0.139:8000";
   static const String apiPrefix = "$baseUrl/api";
 
   Future<AuthResponse> registerPatient(RegisterRequest request) async {
@@ -35,6 +36,48 @@ class ApiService {
       } catch (e) {
         throw Exception('Erreur serveur: ${response.statusCode}');
       }
+    }
+  }
+
+  Future<PatientProfileModel> getPatientProfile(String token) async {
+    final url = Uri.parse('$apiPrefix/patient/profile/');
+    final response = await http.get(
+      url,
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': 'Token $token',
+      },
+    );
+
+    if (response.statusCode == 200) {
+      return PatientProfileModel.fromJson(
+        json.decode(utf8.decode(response.bodyBytes)),
+      );
+    } else {
+      throw Exception('Erreur de chargement du profil: ${response.statusCode}');
+    }
+  }
+
+  Future<PatientProfileModel> updatePatientProfile(
+    String token,
+    Map<String, dynamic> data,
+  ) async {
+    final url = Uri.parse('$apiPrefix/patient/profile/');
+    final response = await http.put(
+      url,
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': 'Token $token',
+      },
+      body: json.encode(data),
+    );
+
+    if (response.statusCode == 200) {
+      return PatientProfileModel.fromJson(
+        json.decode(utf8.decode(response.bodyBytes)),
+      );
+    } else {
+      throw Exception('Erreur de mise à jour: ${response.statusCode}');
     }
   }
 
