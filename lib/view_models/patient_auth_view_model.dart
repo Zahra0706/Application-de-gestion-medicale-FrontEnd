@@ -2,6 +2,7 @@ import 'package:flutter/foundation.dart';
 import '../models/register_request.dart';
 import '../models/auth_response.dart';
 import '../repositories/auth_repository.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class PatientAuthViewModel with ChangeNotifier {
   final AuthRepository _authRepository;
@@ -23,14 +24,25 @@ class PatientAuthViewModel with ChangeNotifier {
 
     try {
       _authResponse = await _authRepository.loginPatient(email, password);
-      // TODO: Save token using a storage service
+
       if (_authResponse?.token != null) {
         print('Patient Key received: ${_authResponse!.token}');
+
+        // Sauvegarder le token et les infos utilisateur
+        final prefs = await SharedPreferences.getInstance();
+        await prefs.setString('auth_token', _authResponse!.token!);
+        if (_authResponse!.user != null) {
+          await prefs.setString('user_id', _authResponse!.user!.id.toString());
+          await prefs.setString('username', _authResponse!.user!.username);
+          await prefs.setString('user_role', 'PATIENT');
+        }
+
         return true;
       }
       return false;
     } catch (e) {
       _errorMessage = e.toString().replaceAll('Exception: ', '');
+      print("Erreur de connexion ViewModel: $_errorMessage");
       return false;
     } finally {
       _isLoading = false;
@@ -52,6 +64,16 @@ class PatientAuthViewModel with ChangeNotifier {
       _authResponse = await _authRepository.registerPatient(request);
       if (_authResponse?.token != null) {
         print('Patient Registered, Token: ${_authResponse!.token}');
+
+        // Sauvegarder le token après inscription
+        final prefs = await SharedPreferences.getInstance();
+        await prefs.setString('auth_token', _authResponse!.token!);
+        if (_authResponse!.user != null) {
+          await prefs.setString('user_id', _authResponse!.user!.id.toString());
+          await prefs.setString('username', _authResponse!.user!.username);
+          await prefs.setString('user_role', 'PATIENT');
+        }
+
         return true;
       }
       return false;
@@ -66,6 +88,13 @@ class PatientAuthViewModel with ChangeNotifier {
 
   void clearError() {
     _errorMessage = null;
+    notifyListeners();
+  }
+
+  Future<void> logout() async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.clear();
+    _authResponse = null;
     notifyListeners();
   }
 }

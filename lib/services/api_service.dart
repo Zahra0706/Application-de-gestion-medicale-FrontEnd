@@ -4,7 +4,7 @@ import '../models/register_request.dart';
 import '../models/auth_response.dart';
 
 class ApiService {
-  static const String baseUrl = "http://192.168.0.139:8000";
+  static const String baseUrl = "http://192.168.0.159:8000";
   static const String apiPrefix = "$baseUrl/api";
 
   Future<AuthResponse> registerPatient(RegisterRequest request) async {
@@ -39,12 +39,12 @@ class ApiService {
   }
 
   Future<AuthResponse> loginPatient(String email, String password) async {
-    final url = Uri.parse('$apiPrefix/auth/login/patient/');
+    final url = Uri.parse('$apiPrefix/auth/login/');
     return _loginStrict(url, email, password);
   }
 
   Future<AuthResponse> loginDoctor(String email, String password) async {
-    final url = Uri.parse('$apiPrefix/auth/login/doctor/');
+    final url = Uri.parse('$apiPrefix/auth/login/');
     return _loginStrict(url, email, password);
   }
 
