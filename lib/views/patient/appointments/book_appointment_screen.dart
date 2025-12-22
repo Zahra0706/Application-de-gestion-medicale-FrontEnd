@@ -21,6 +21,8 @@ class _BookAppointmentScreenState extends State<BookAppointmentScreen> {
   DateTime? _selectedDate;
   String? _selectedTime;
   final TextEditingController _reasonController = TextEditingController();
+  final TextEditingController _searchController = TextEditingController();
+  String _searchQuery = "";
 
   // Services
   final DoctorService _doctorService = DoctorService();
@@ -46,7 +48,21 @@ class _BookAppointmentScreenState extends State<BookAppointmentScreen> {
   @override
   void dispose() {
     _reasonController.dispose();
+    _searchController.dispose();
     super.dispose();
+  }
+
+  List<Doctor> get _filteredDoctors {
+    return _doctors.where((doc) {
+      final matchesSearch =
+          _searchQuery.isEmpty ||
+          doc.firstName.toLowerCase().contains(_searchQuery.toLowerCase()) ||
+          doc.lastName.toLowerCase().contains(_searchQuery.toLowerCase()) ||
+          doc.speciality.toLowerCase().contains(_searchQuery.toLowerCase());
+
+      // Filter by availability and active status
+      return matchesSearch && doc.isAvailable && doc.isActive;
+    }).toList();
   }
 
   Future<void> _fetchDoctors() async {
@@ -178,6 +194,9 @@ class _BookAppointmentScreenState extends State<BookAppointmentScreen> {
     if (_doctors.isEmpty) {
       return const Center(child: Text("Aucun médecin disponible."));
     }
+
+    final filteredList = _filteredDoctors;
+
     return Column(
       children: [
         const Text(
@@ -185,40 +204,75 @@ class _BookAppointmentScreenState extends State<BookAppointmentScreen> {
           style: TextStyle(fontWeight: FontWeight.bold),
         ),
         const SizedBox(height: 10),
-        ListView.builder(
-          shrinkWrap: true,
-          physics: const NeverScrollableScrollPhysics(),
-          itemCount: _doctors.length,
-          itemBuilder: (context, index) {
-            final doc = _doctors[index];
-            final isSelected = _selectedDoctorId == doc.id;
-            return Card(
-              color: isSelected
-                  ? const Color(0xFF567991).withOpacity(0.1)
-                  : Colors.white,
-              child: ListTile(
-                leading: CircleAvatar(
-                  backgroundColor: const Color(0xFF567991),
-                  child: Text(
-                    doc.firstName.isNotEmpty ? doc.firstName[0] : 'D',
-                    style: const TextStyle(color: Colors.white),
-                  ),
-                ),
-                title: Text(doc.fullName),
-                subtitle: Text(doc.speciality),
-                trailing: isSelected
-                    ? const Icon(Icons.check_circle, color: Color(0xFF567991))
-                    : null,
-                onTap: () {
-                  setState(() {
-                    _selectedDoctorId = doc.id;
-                    _selectedDoctor = doc;
-                  });
-                },
-              ),
-            );
+        TextField(
+          controller: _searchController,
+          decoration: InputDecoration(
+            labelText: 'Rechercher un médecin',
+            hintText: 'Nom ou spécialité',
+            prefixIcon: const Icon(Icons.search),
+            border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
+            filled: true,
+            fillColor: Colors.white,
+          ),
+          onChanged: (value) {
+            setState(() {
+              _searchQuery = value;
+            });
           },
         ),
+        const SizedBox(height: 10),
+        if (filteredList.isEmpty)
+          const Padding(
+            padding: EdgeInsets.all(20.0),
+            child: Text("Aucun médecin ne correspond à votre recherche."),
+          )
+        else
+          ListView.builder(
+            shrinkWrap: true,
+            physics: const NeverScrollableScrollPhysics(),
+            itemCount: filteredList.length,
+            itemBuilder: (context, index) {
+              final doc = filteredList[index];
+              final isSelected = _selectedDoctorId == doc.id;
+              return Card(
+                color: isSelected
+                    ? const Color(0xFF567991).withOpacity(0.1)
+                    : Colors.white,
+                child: ListTile(
+                  leading: CircleAvatar(
+                    backgroundColor: const Color(0xFF567991),
+                    child: Text(
+                      doc.firstName.isNotEmpty ? doc.firstName[0] : 'D',
+                      style: const TextStyle(color: Colors.white),
+                    ),
+                  ),
+                  title: Text(doc.fullName),
+                  subtitle: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(doc.speciality),
+                      Text(
+                        "Prix: ${doc.consultationFee.toStringAsFixed(0)} MAD", 
+                        style: const TextStyle(
+                          fontWeight: FontWeight.bold,
+                          color: Colors.green,
+                        ),
+                      ),
+                    ],
+                  ),
+                  trailing: isSelected
+                      ? const Icon(Icons.check_circle, color: Color(0xFF567991))
+                      : null,
+                  onTap: () {
+                    setState(() {
+                      _selectedDoctorId = doc.id;
+                      _selectedDoctor = doc;
+                    });
+                  },
+                ),
+              );
+            },
+          ),
       ],
     );
   }

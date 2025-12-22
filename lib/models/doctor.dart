@@ -4,6 +4,8 @@ class Doctor {
   final String lastName;
   final String speciality;
   final double consultationFee;
+  final bool isAvailable;
+  final bool isActive;
   final String? bio;
 
   Doctor({
@@ -12,6 +14,8 @@ class Doctor {
     required this.lastName,
     required this.speciality,
     required this.consultationFee,
+    required this.isAvailable,
+    required this.isActive,
     this.bio,
   });
 
@@ -25,6 +29,8 @@ class Doctor {
           ? double.tryParse(json['consultation_fee'].toString()) ?? 0.0
           : 0.0,
       bio: json['bio'],
+      isAvailable: json['is_available'] ?? false,
+      isActive: json['user']['is_active'] ?? false,
     );
   }
 
