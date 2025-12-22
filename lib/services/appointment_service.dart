@@ -52,4 +52,22 @@ class AppointmentService {
       );
     }
   }
+
+  Future<void> cancelAppointment(String token, int appointmentId) async {
+    final url = Uri.parse(
+      '${ApiService.apiPrefix}/appointments/$appointmentId/cancel/',
+    );
+    final response = await http.post(
+      url,
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': 'Token $token',
+      },
+    );
+
+    if (response.statusCode != 200) {
+      final body = json.decode(response.body);
+      throw Exception(body['error'] ?? 'Impossible d\'annuler le rendez-vous');
+    }
+  }
 }

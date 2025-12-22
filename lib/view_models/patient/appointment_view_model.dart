@@ -16,7 +16,7 @@ class AppointmentViewModel with ChangeNotifier {
   // Filtered lists
   List<Appointment> get upcomingAppointments {
     final now = DateTime.now();
-    return _appointments
+    final list = _appointments
         .where(
           (a) =>
               a.status != 'CANCELLED' &&
@@ -24,23 +24,37 @@ class AppointmentViewModel with ChangeNotifier {
               a.dateTime.isAfter(now),
         )
         .toList();
+    // Tri croissant (plus proche au plus lointain)
+    list.sort((a, b) => a.dateTime.compareTo(b.dateTime));
+    return list;
   }
 
   List<Appointment> get pastAppointments {
     final now = DateTime.now();
-    return _appointments
+    final list = _appointments
         .where(
           (a) =>
               a.status == 'COMPLETED' ||
               (a.status != 'CANCELLED' && a.dateTime.isBefore(now)),
         )
         .toList();
+    // Tri décroissant (plus récent au plus ancien)
+    list.sort((a, b) => b.dateTime.compareTo(a.dateTime));
+    return list;
   }
 
   List<Appointment> get cancelledAppointments {
-    return _appointments
+    final list = _appointments
         .where((a) => a.status == 'CANCELLED' || a.status == 'REJECTED')
         .toList();
+    // Tri par date d'annulation (si disponible) ou date de RDV
+    list.sort((a, b) {
+      if (a.createdDate != null && b.createdDate != null) {
+        return b.createdDate!.compareTo(a.createdDate!);
+      }
+      return b.dateTime.compareTo(a.dateTime);
+    });
+    return list;
   }
 
   Future<void> fetchAppointments(String token) async {
@@ -75,6 +89,24 @@ class AppointmentViewModel with ChangeNotifier {
         date,
         reason,
       );
+      await fetchAppointments(token); // Refresh list
+      return true;
+    } catch (e) {
+      _error = e.toString().replaceAll('Exception: ', '');
+      return false;
+    } finally {
+      _isLoading = false;
+      notifyListeners();
+    }
+  }
+
+  Future<bool> cancelAppointment(String token, int appointmentId) async {
+    _isLoading = true;
+    _error = null;
+    notifyListeners();
+
+    try {
+      await _appointmentService.cancelAppointment(token, appointmentId);
       await fetchAppointments(token); // Refresh list
       return true;
     } catch (e) {

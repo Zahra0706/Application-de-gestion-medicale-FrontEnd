@@ -8,9 +8,12 @@ class Appointment {
   final String status;
   final String? reason;
   final String? notesPatient;
+  final String? createdAt; // Pour le tri des annulés
 
   // Computed properties
   DateTime get dateTime => DateTime.parse(date);
+  DateTime? get createdDate =>
+      createdAt != null ? DateTime.parse(createdAt!) : null;
 
   Appointment({
     required this.id,
@@ -22,6 +25,7 @@ class Appointment {
     required this.status,
     this.reason,
     this.notesPatient,
+    this.createdAt,
   });
 
   factory Appointment.fromJson(Map<String, dynamic> json) {
@@ -35,6 +39,7 @@ class Appointment {
       status: json['status'],
       reason: json['reason'],
       notesPatient: json['notes_patient'],
+      createdAt: json['created_at'],
     );
   }
 }
