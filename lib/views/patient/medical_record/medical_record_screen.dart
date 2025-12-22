@@ -3,6 +3,9 @@ import 'package:provider/provider.dart';
 import 'package:intl/intl.dart';
 import '../../../view_models/patient/medical_record_view_model.dart';
 import '../../../view_models/patient_auth_view_model.dart';
+import 'package:url_launcher/url_launcher.dart';
+import '../../common/document_viewer_screen.dart';
+import '../../../models/medical_document_model.dart';
 import '../documents/widgets/document_widgets.dart';
 
 class MedicalRecordScreen extends StatefulWidget {
@@ -36,6 +39,60 @@ class _MedicalRecordScreenState extends State<MedicalRecordScreen>
         context,
         listen: false,
       ).fetchMedicalRecord(token);
+    }
+  }
+
+  void _viewDocument(MedicalDocument doc) {
+    if (doc.fileUrl == null || doc.fileUrl!.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('URL du document non disponible')),
+      );
+      return;
+    }
+
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => DocumentViewerScreen(
+          url: doc.fileUrl!,
+          title: doc.title,
+          documentType: doc.documentType,
+        ),
+      ),
+    );
+  }
+
+  Future<void> _downloadDocument(String? url) async {
+    if (url == null || url.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('URL du document non disponible')),
+      );
+      return;
+    }
+
+    final uri = Uri.parse(url);
+
+    try {
+      bool launched = await launchUrl(
+        uri,
+        mode: LaunchMode.externalApplication,
+      );
+
+      if (!launched) {
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(
+              content: Text('Impossible d\'ouvrir le lien de téléchargement'),
+            ),
+          );
+        }
+      }
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text('Erreur: $e')));
+      }
     }
   }
 
@@ -261,9 +318,8 @@ class _MedicalRecordScreenState extends State<MedicalRecordScreen>
         final doc = docs[index];
         return DocumentCard(
           document: doc,
-          onView:
-              () {}, // Handled by DocumentsScreen usually, but could be added here
-          onDownload: () {},
+          onView: () => _viewDocument(doc),
+          onDownload: () => _downloadDocument(doc.fileUrl),
         );
       },
     );

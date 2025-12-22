@@ -2,7 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:url_launcher/url_launcher.dart';
 import '../../../view_models/patient/medical_document_view_model.dart';
+import '../../../models/medical_document_model.dart';
+
 import '../../../view_models/patient_auth_view_model.dart';
+import '../../common/document_viewer_screen.dart';
 import 'widgets/document_widgets.dart';
 import 'widgets/upload_document_dialog.dart';
 
@@ -83,7 +86,27 @@ class _DocumentsScreenState extends State<DocumentsScreen> {
     );
   }
 
-  Future<void> _openDocument(String? url) async {
+  void _viewDocument(MedicalDocument doc) {
+    if (doc.fileUrl == null || doc.fileUrl!.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('URL du document non disponible')),
+      );
+      return;
+    }
+
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => DocumentViewerScreen(
+          url: doc.fileUrl!,
+          title: doc.title,
+          documentType: doc.documentType,
+        ),
+      ),
+    );
+  }
+
+  Future<void> _downloadDocument(String? url) async {
     if (url == null || url.isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text('URL du document non disponible')),
@@ -91,18 +114,9 @@ class _DocumentsScreenState extends State<DocumentsScreen> {
       return;
     }
 
-    // Remplace localhost par l'IP du serveur si nécessaire (debug)
-    String finalUrl = url;
-    if (url.contains('localhost') || url.contains('127.0.0.1')) {
-      // On essaie de récupérer l'IP depuis la config si possible,
-      // mais ici on fait confiance à l'URL générée par le serveur.
-      // Si le serveur est bien configuré avec ALLOWED_HOSTS il devrait renvoyer l'IP correcte.
-    }
-
-    final uri = Uri.parse(finalUrl);
+    final uri = Uri.parse(url);
 
     try {
-      // On tente d'ouvrir directement. Sur certaines versions d'Android, canLaunchUrl renvoie false même si c'est possible.
       bool launched = await launchUrl(
         uri,
         mode: LaunchMode.externalApplication,
@@ -112,9 +126,7 @@ class _DocumentsScreenState extends State<DocumentsScreen> {
         if (mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
             const SnackBar(
-              content: Text(
-                'Impossible d\'ouvrir le document dans une application externe',
-              ),
+              content: Text('Impossible d\'ouvrir le lien de téléchargement'),
             ),
           );
         }
@@ -232,8 +244,8 @@ class _DocumentsScreenState extends State<DocumentsScreen> {
                       final doc = viewModel.documents[index];
                       return DocumentCard(
                         document: doc,
-                        onView: () => _openDocument(doc.fileUrl),
-                        onDownload: () => _openDocument(doc.fileUrl),
+                        onView: () => _viewDocument(doc),
+                        onDownload: () => _downloadDocument(doc.fileUrl),
                       );
                     },
                   ),
