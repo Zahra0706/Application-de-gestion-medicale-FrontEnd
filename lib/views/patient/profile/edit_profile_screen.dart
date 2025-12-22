@@ -161,8 +161,6 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
               isPhone: true,
             ),
             const SizedBox(height: 16),
-            _buildTextField(_addressCtrl, "Adresse", Icons.home, maxLines: 2),
-            const SizedBox(height: 16),
             GestureDetector(
               onTap: () async {
                 final DateTime? picked = await showDatePicker(
@@ -201,6 +199,8 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                 ),
               ),
             ),
+            const SizedBox(height: 16),
+            _buildTextField(_addressCtrl, "Adresse", Icons.home, maxLines: 2),
           ]),
         ],
       ),
