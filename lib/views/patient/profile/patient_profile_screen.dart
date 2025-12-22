@@ -33,7 +33,8 @@ class _PatientProfileScreenState extends State<PatientProfileScreen> {
   Widget build(BuildContext context) {
     final profileVM = context.watch<PatientProfileViewModel>();
     final authVM = context.watch<PatientAuthViewModel>();
-    final user = authVM.authResponse?.user;
+    // Prefer the updated user data from profileVM, fall back to authVM if profile hasn't loaded yet
+    final user = profileVM.profileData?.user ?? authVM.authResponse?.user;
 
     return Scaffold(
       backgroundColor: const Color(0xFFF5F9FC),
@@ -92,6 +93,12 @@ class _PatientProfileScreenState extends State<PatientProfileScreen> {
                               Icons.phone,
                               "Téléphone",
                               user?.phone ?? "Non renseigné",
+                            ),
+                            const Divider(),
+                            _buildInfoRow(
+                              Icons.home,
+                              "Adresse",
+                              user?.address ?? "Non renseigné",
                             ),
                           ],
                         ),
