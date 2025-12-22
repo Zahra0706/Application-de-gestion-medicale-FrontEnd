@@ -5,6 +5,7 @@ import 'view_models/doctor_auth_view_model.dart';
 import 'view_models/patient/patient_dashboard_view_model.dart';
 import 'view_models/patient/appointment_view_model.dart';
 import 'view_models/patient/patient_profile_view_model.dart';
+import 'view_models/patient/medical_document_view_model.dart';
 import 'view_models/auth_view_model.dart';
 import 'views/auth/combined_login_screen.dart';
 import 'repositories/auth_repository.dart';
@@ -45,6 +46,7 @@ class MyApp extends StatelessWidget {
         ChangeNotifierProvider(create: (_) => patientDashboardViewModel),
         ChangeNotifierProvider(create: (_) => appointmentViewModel),
         ChangeNotifierProvider(create: (_) => PatientProfileViewModel()),
+        ChangeNotifierProvider(create: (_) => MedicalDocumentViewModel()),
       ],
       child: MaterialApp(
         title: 'MedConnect',

@@ -22,6 +22,12 @@ dependencies:
 
   # Icônes iOS
   cupertino_icons: ^1.0.8
+  # pour les liens
+  url_launcher: ^6.3.2
+  # pour les dates
+  intl: ^0.20.2
+  # pour les fichiers
+  file_picker: ^10.3.8
 
 dev_dependencies:
   flutter_test:

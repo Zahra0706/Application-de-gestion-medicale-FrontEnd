@@ -5,7 +5,8 @@ import '../../view_models/patient_auth_view_model.dart';
 import '../auth/combined_login_screen.dart';
 import 'appointments/appointment_list_screen.dart';
 import 'appointments/book_appointment_screen.dart';
-import 'patient_profile_screen.dart';
+import 'profile/patient_profile_screen.dart';
+import 'documents/documents_screen.dart';
 
 class PatientDashboardScreen extends StatefulWidget {
   const PatientDashboardScreen({Key? key}) : super(key: key);
@@ -168,6 +169,11 @@ class _PatientDashboardScreenState extends State<PatientDashboardScreen> {
               context,
               MaterialPageRoute(builder: (_) => const AppointmentListScreen()),
             );
+          } else if (index == 3) {
+            Navigator.push(
+              context,
+              MaterialPageRoute(builder: (_) => const DocumentsScreen()),
+            );
           } else if (index == 4) {
             Navigator.push(
               context,
@@ -236,15 +242,13 @@ class _PatientDashboardScreenState extends State<PatientDashboardScreen> {
             onTap: () {},
           ),
           ListTile(
-            leading: const Icon(Icons.calendar_today),
-            title: const Text('Rendez-vous'),
+            leading: const Icon(Icons.folder),
+            title: const Text('Mes documents'),
             onTap: () {
               Navigator.pop(context);
               Navigator.push(
                 context,
-                MaterialPageRoute(
-                  builder: (_) => const AppointmentListScreen(),
-                ),
+                MaterialPageRoute(builder: (_) => const DocumentsScreen()),
               );
             },
           ),
@@ -344,6 +348,10 @@ class _PatientDashboardScreenState extends State<PatientDashboardScreen> {
             "$docCount nouveaux",
             Icons.folder,
             Colors.orangeAccent,
+            () => Navigator.push(
+              context,
+              MaterialPageRoute(builder: (_) => const DocumentsScreen()),
+            ),
           ),
         ],
       ),
@@ -354,43 +362,48 @@ class _PatientDashboardScreenState extends State<PatientDashboardScreen> {
     String title,
     String content,
     IconData icon,
-    Color color,
-  ) {
-    return Container(
-      width: 140,
-      padding: const EdgeInsets.all(16),
-      decoration: BoxDecoration(
-        color: color,
-        borderRadius: BorderRadius.circular(16),
-        boxShadow: [
-          BoxShadow(
-            color: color.withOpacity(0.3),
-            blurRadius: 8,
-            offset: const Offset(0, 4),
-          ),
-        ],
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Icon(icon, color: Colors.white, size: 32),
-          const SizedBox(height: 12),
-          Text(
-            title,
-            style: const TextStyle(color: Colors.white70, fontSize: 13),
-          ),
-          const SizedBox(height: 4),
-          Text(
-            content,
-            style: const TextStyle(
-              color: Colors.white,
-              fontWeight: FontWeight.bold,
-              fontSize: 15,
+    Color color, [
+    VoidCallback? onTap,
+  ]) {
+    return InkWell(
+      onTap: onTap,
+      borderRadius: BorderRadius.circular(16),
+      child: Container(
+        width: 140,
+        padding: const EdgeInsets.all(16),
+        decoration: BoxDecoration(
+          color: color,
+          borderRadius: BorderRadius.circular(16),
+          boxShadow: [
+            BoxShadow(
+              color: color.withOpacity(0.3),
+              blurRadius: 8,
+              offset: const Offset(0, 4),
             ),
-            maxLines: 2,
-            overflow: TextOverflow.ellipsis,
-          ),
-        ],
+          ],
+        ),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Icon(icon, color: Colors.white, size: 32),
+            const SizedBox(height: 12),
+            Text(
+              title,
+              style: const TextStyle(color: Colors.white70, fontSize: 13),
+            ),
+            const SizedBox(height: 4),
+            Text(
+              content,
+              style: const TextStyle(
+                color: Colors.white,
+                fontWeight: FontWeight.bold,
+                fontSize: 15,
+              ),
+              maxLines: 2,
+              overflow: TextOverflow.ellipsis,
+            ),
+          ],
+        ),
       ),
     );
   }
@@ -419,6 +432,10 @@ class _PatientDashboardScreenState extends State<PatientDashboardScreen> {
           "Mes Ordonnances",
           Icons.description,
           Colors.green,
+          () => Navigator.push(
+            context,
+            MaterialPageRoute(builder: (_) => const DocumentsScreen()),
+          ),
         ),
         _buildActionCard(
           context,

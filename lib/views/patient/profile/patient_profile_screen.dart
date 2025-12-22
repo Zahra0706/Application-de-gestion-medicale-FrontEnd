@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import '../../view_models/patient/patient_profile_view_model.dart';
-import '../../view_models/patient_auth_view_model.dart';
+import '../../../view_models/patient/patient_profile_view_model.dart';
+import '../../../view_models/patient_auth_view_model.dart';
 import 'edit_profile_screen.dart';
 
 class PatientProfileScreen extends StatefulWidget {
