@@ -5,7 +5,7 @@ import '../models/auth_response.dart';
 import '../models/patient_profile_model.dart';
 
 class ApiService {
-  static const String baseUrl = "http://192.168.0.159:8000";
+  static const String baseUrl = "http://192.168.1.107:8000";
   static const String apiPrefix = "$baseUrl/api";
 
   Future<AuthResponse> registerPatient(RegisterRequest request) async {
@@ -18,6 +18,37 @@ class ApiService {
       url,
       headers: {'Content-Type': 'application/json'},
       body: json.encode(request.toJson()),
+    );
+
+    print('Statut de réponse: ${response.statusCode}');
+    print('Corps de réponse: ${response.body}');
+
+    if (response.statusCode == 201 || response.statusCode == 200) {
+      return AuthResponse.fromJson(json.decode(response.body));
+    } else {
+      try {
+        final errorBody = json.decode(response.body);
+        throw Exception(
+          errorBody['error'] ??
+              errorBody['message'] ??
+              'Erreur d\'inscription (${response.statusCode})',
+        );
+      } catch (e) {
+        throw Exception('Erreur serveur: ${response.statusCode}');
+      }
+    }
+  }
+
+  Future<AuthResponse> registerDoctor(Map<String, dynamic> data) async {
+    final url = Uri.parse('$apiPrefix/auth/register/doctor/');
+
+    print('URL d\'inscription Médecin: $url');
+    print('Données envoyées: $data');
+
+    final response = await http.post(
+      url,
+      headers: {'Content-Type': 'application/json'},
+      body: json.encode(data),
     );
 
     print('Statut de réponse: ${response.statusCode}');

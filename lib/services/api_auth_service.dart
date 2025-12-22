@@ -15,6 +15,11 @@ class ApiAuthService implements AuthService {
   }
 
   @override
+  Future<AuthResponse> registerDoctor(Map<String, dynamic> data) async {
+    return await _apiService.registerDoctor(data);
+  }
+
+  @override
   Future<AuthResponse> loginPatient(String email, String password) async {
     return await _apiService.loginPatient(email, password);
   }

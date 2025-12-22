@@ -27,6 +27,8 @@ class _RegisterDoctorScreenState extends State<RegisterDoctorScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final authViewModel = Provider.of<AuthViewModel>(context);
+
     // Medical Blue Palette
     const primaryColor = Color.fromARGB(255, 86, 121, 145);
     const lightBackground = Color.fromARGB(255, 213, 231, 243);
@@ -232,18 +234,60 @@ class _RegisterDoctorScreenState extends State<RegisterDoctorScreen> {
                       
                       const SizedBox(height: 32),
 
-                      ElevatedButton(
-                        onPressed: () {
+                      if (authViewModel.errorMessage != null)
+                        Padding(
+                          padding: const EdgeInsets.only(bottom: 16.0),
+                          child: Text(
+                            authViewModel.errorMessage!,
+                            style: const TextStyle(
+                              color: Colors.red,
+                              fontWeight: FontWeight.bold,
+                            ),
+                            textAlign: TextAlign.center,
+                          ),
+                        ),
+
+                      authViewModel.isLoading
+                      ? const Center(child: CircularProgressIndicator())
+                      : ElevatedButton(
+                        onPressed: () async {
                           if (_formKey.currentState!.validate()) {
-                            // Placeholder for registration logic
-                            ScaffoldMessenger.of(context).showSnackBar(
-                              const SnackBar(
-                                content: Text(
-                                  'Inscription médecin non implémentée (Backend manquant)',
-                                ),
-                                backgroundColor: Colors.orange,
-                              ),
-                            );
+                             final payload = {
+                                'username': _usernameController.text,
+                                'email': _emailController.text,
+                                'password': _passwordController.text,
+                                'first_name': _firstNameController.text,
+                                'last_name': _lastNameController.text,
+                                'phone': _phoneController.text,
+                                'license_number': _licenseNumberController.text,
+                                'specialty': _specialityController.text,
+                             };
+
+                             final success = await authViewModel.registerDoctor(payload);
+
+                             if (success && mounted) {
+                               ScaffoldMessenger.of(context).showSnackBar(
+                                 const SnackBar(
+                                   content: Text('Compte médecin créé avec succès'),
+                                   backgroundColor: Colors.green,
+                                 ),
+                               );
+                               Navigator.pushReplacement(
+                                 context,
+                                 MaterialPageRoute(
+                                   builder: (context) => const CombinedLoginScreen(),
+                                 ),
+                               );
+                             } else if (mounted) {
+                                // Error is displayed via viewModel.errorMessage above or generic snackbar
+                                // User asked for red snackbar with backend message
+                                ScaffoldMessenger.of(context).showSnackBar(
+                                  SnackBar(
+                                    content: Text(authViewModel.errorMessage ?? 'Erreur inconnue'),
+                                    backgroundColor: Colors.red,
+                                  ),
+                                );
+                             }
                           }
                         },
                         style: ElevatedButton.styleFrom(

@@ -41,6 +41,28 @@ class AuthViewModel with ChangeNotifier {
     }
   }
 
+  Future<bool> registerDoctor(Map<String, dynamic> payload) async {
+    _isLoading = true;
+    _errorMessage = null;
+    notifyListeners();
+
+    try {
+      _authResponse = await _authRepository.registerDoctor(payload);
+      if (_authResponse?.token != null) {
+        // TODO: Sauvegarder token
+        print('Token médecin reçu: ${_authResponse!.token}');
+        return true;
+      }
+      return false;
+    } catch (e) {
+      _errorMessage = e.toString();
+      return false;
+    } finally {
+      _isLoading = false;
+      notifyListeners();
+    }
+  }
+
   // Connexion (Legacy/Generic - defaulting to Patient or deprecated)
   // Utiliser PatientAuthViewModel ou DoctorAuthViewModel pour les nouvelles implémentations.
   Future<void> login(String email, String password) async {

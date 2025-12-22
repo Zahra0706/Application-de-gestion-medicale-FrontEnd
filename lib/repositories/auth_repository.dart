@@ -11,6 +11,10 @@ class AuthRepository {
     return _authService.registerPatient(request);
   }
 
+  Future<AuthResponse> registerDoctor(Map<String, dynamic> data) {
+    return _authService.registerDoctor(data);
+  }
+
   Future<AuthResponse> loginPatient(String email, String password) {
     return _authService.loginPatient(email, password);
   }
