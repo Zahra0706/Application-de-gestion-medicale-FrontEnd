@@ -20,6 +20,7 @@ dependencies:
   dio: ^5.3.0
   # Pour la sérialisation JSON (convertir JSON <-> Objet Dart)
   json_annotation: ^4.8.1
+  # pour les préférences partagées
   shared_preferences: ^2.2.2
 
   # Icônes iOS
@@ -35,6 +36,8 @@ dependencies:
   printing: ^5.14.2
   path_provider: ^2.1.5
   flutter_cached_pdfview: ^0.4.3
+  permission_handler: ^12.0.1
+  open_file: ^3.5.10
 
 dev_dependencies:
   flutter_test:

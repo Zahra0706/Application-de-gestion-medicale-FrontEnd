@@ -164,22 +164,25 @@ class _PatientDashboardScreenState extends State<PatientDashboardScreen> {
           BottomNavigationBarItem(icon: Icon(Icons.folder), label: 'Documents'),
           BottomNavigationBarItem(icon: Icon(Icons.person), label: 'Profil'),
         ],
-        onTap: (index) {
+        onTap: (index) async {
           if (index == 1) {
-            Navigator.push(
+            await Navigator.push(
               context,
               MaterialPageRoute(builder: (_) => const AppointmentListScreen()),
             );
+            _loadData();
           } else if (index == 3) {
-            Navigator.push(
+            await Navigator.push(
               context,
               MaterialPageRoute(builder: (_) => const DocumentsScreen()),
             );
+            _loadData();
           } else if (index == 4) {
-            Navigator.push(
+            await Navigator.push(
               context,
               MaterialPageRoute(builder: (_) => const PatientProfileScreen()),
             );
+            _loadData();
           }
         },
       ),
@@ -224,12 +227,13 @@ class _PatientDashboardScreenState extends State<PatientDashboardScreen> {
           ListTile(
             leading: const Icon(Icons.person),
             title: const Text('Mon profil'),
-            onTap: () {
+            onTap: () async {
               Navigator.pop(context);
-              Navigator.push(
+              await Navigator.push(
                 context,
                 MaterialPageRoute(builder: (_) => const PatientProfileScreen()),
               );
+              _loadData();
             },
           ),
           const Divider(),
@@ -240,34 +244,39 @@ class _PatientDashboardScreenState extends State<PatientDashboardScreen> {
           ListTile(
             leading: const Icon(Icons.calendar_today),
             title: const Text('Rendez-vous'),
-            onTap: () {
+            onTap: () async {
               Navigator.pop(context);
-              Navigator.push(
+              await Navigator.push(
                 context,
-                MaterialPageRoute(builder: (_) => const AppointmentListScreen()),
+                MaterialPageRoute(
+                  builder: (_) => const AppointmentListScreen(),
+                ),
               );
+              _loadData();
             },
           ),
           ListTile(
             leading: const Icon(Icons.assignment),
             title: const Text('Dossier médical'),
-            onTap: () {
+            onTap: () async {
               Navigator.pop(context);
-              Navigator.push(
+              await Navigator.push(
                 context,
                 MaterialPageRoute(builder: (_) => const MedicalRecordScreen()),
               );
+              _loadData();
             },
           ),
           ListTile(
             leading: const Icon(Icons.folder),
             title: const Text('Mes documents'),
-            onTap: () {
+            onTap: () async {
               Navigator.pop(context);
-              Navigator.push(
+              await Navigator.push(
                 context,
                 MaterialPageRoute(builder: (_) => const DocumentsScreen()),
               );
+              _loadData();
             },
           ),
           const Divider(),
@@ -366,10 +375,13 @@ class _PatientDashboardScreenState extends State<PatientDashboardScreen> {
             "$docCount nouveaux",
             Icons.folder,
             Colors.orangeAccent,
-            () => Navigator.push(
-              context,
-              MaterialPageRoute(builder: (_) => const DocumentsScreen()),
-            ),
+            () async {
+              await Navigator.push(
+                context,
+                MaterialPageRoute(builder: (_) => const DocumentsScreen()),
+              );
+              _loadData();
+            },
           ),
         ],
       ),
@@ -440,20 +452,26 @@ class _PatientDashboardScreenState extends State<PatientDashboardScreen> {
           "Prendre RDV",
           Icons.add_alarm,
           Colors.blue,
-          () => Navigator.push(
-            context,
-            MaterialPageRoute(builder: (_) => const BookAppointmentScreen()),
-          ),
+          () async {
+            await Navigator.push(
+              context,
+              MaterialPageRoute(builder: (_) => const BookAppointmentScreen()),
+            );
+            _loadData();
+          },
         ),
         _buildActionCard(
           context,
           "Mes Ordonnances",
           Icons.description,
           Colors.green,
-          () => Navigator.push(
-            context,
-            MaterialPageRoute(builder: (_) => const DocumentsScreen()),
-          ),
+          () async {
+            await Navigator.push(
+              context,
+              MaterialPageRoute(builder: (_) => const DocumentsScreen()),
+            );
+            _loadData();
+          },
         ),
         _buildActionCard(
           context,

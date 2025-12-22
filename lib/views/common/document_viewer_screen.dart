@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_cached_pdfview/flutter_cached_pdfview.dart';
+import '../../services/document_download_service.dart';
 
 class DocumentViewerScreen extends StatelessWidget {
   final String url;
@@ -16,9 +17,7 @@ class DocumentViewerScreen extends StatelessWidget {
   bool get _isPdf {
     if (documentType != null &&
         (documentType!.toLowerCase().contains('pdf') ||
-            documentType!.toLowerCase() == 'ordonnance')) {
-
-    }
+            documentType!.toLowerCase() == 'ordonnance')) {}
     return url.toLowerCase().contains('.pdf');
   }
 
@@ -32,6 +31,20 @@ class DocumentViewerScreen extends StatelessWidget {
         ),
         backgroundColor: const Color(0xFF567991),
         iconTheme: const IconThemeData(color: Colors.white),
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.download),
+            onPressed: () {
+              // Extract filename or use title
+              final fileName = url.split('/').last.split('?').first;
+              DocumentDownloadService().downloadFile(
+                context,
+                url,
+                fileName.contains('.') ? fileName : '$fileName.pdf',
+              );
+            },
+          ),
+        ],
       ),
       body: _isPdf
           ? const PDF().cachedFromUrl(

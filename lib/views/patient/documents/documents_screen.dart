@@ -8,6 +8,7 @@ import '../../../view_models/patient_auth_view_model.dart';
 import '../../common/document_viewer_screen.dart';
 import 'widgets/document_widgets.dart';
 import 'widgets/upload_document_dialog.dart';
+import '../../../services/document_download_service.dart';
 
 class DocumentsScreen extends StatefulWidget {
   const DocumentsScreen({Key? key}) : super(key: key);
@@ -106,38 +107,20 @@ class _DocumentsScreenState extends State<DocumentsScreen> {
     );
   }
 
-  Future<void> _downloadDocument(String? url) async {
-    if (url == null || url.isEmpty) {
+  Future<void> _downloadDocument(MedicalDocument doc) async {
+    if (doc.fileUrl == null || doc.fileUrl!.isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text('URL du document non disponible')),
       );
       return;
     }
 
-    final uri = Uri.parse(url);
-
-    try {
-      bool launched = await launchUrl(
-        uri,
-        mode: LaunchMode.externalApplication,
-      );
-
-      if (!launched) {
-        if (mounted) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(
-              content: Text('Impossible d\'ouvrir le lien de téléchargement'),
-            ),
-          );
-        }
-      }
-    } catch (e) {
-      if (mounted) {
-        ScaffoldMessenger.of(
-          context,
-        ).showSnackBar(SnackBar(content: Text('Erreur: $e')));
-      }
-    }
+    final String fileName = doc.fileUrl!.split('/').last.split('?').first;
+    await DocumentDownloadService().downloadFile(
+      context,
+      doc.fileUrl!,
+      fileName.contains('.') ? fileName : '$fileName.pdf',
+    );
   }
 
   @override
@@ -245,7 +228,7 @@ class _DocumentsScreenState extends State<DocumentsScreen> {
                       return DocumentCard(
                         document: doc,
                         onView: () => _viewDocument(doc),
-                        onDownload: () => _downloadDocument(doc.fileUrl),
+                        onDownload: () => _downloadDocument(doc),
                       );
                     },
                   ),
