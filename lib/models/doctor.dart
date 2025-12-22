@@ -7,6 +7,7 @@ class Doctor {
   final bool isAvailable;
   final bool isActive;
   final String? bio;
+  final String phone;
 
   Doctor({
     required this.id,
@@ -16,6 +17,7 @@ class Doctor {
     required this.consultationFee,
     required this.isAvailable,
     required this.isActive,
+    required this.phone,
     this.bio,
   });
 
@@ -31,6 +33,7 @@ class Doctor {
       bio: json['bio'],
       isAvailable: json['is_available'] ?? false,
       isActive: json['user']['is_active'] ?? false,
+      phone: json['user']['phone'] ?? 'Non disponible',
     );
   }
 

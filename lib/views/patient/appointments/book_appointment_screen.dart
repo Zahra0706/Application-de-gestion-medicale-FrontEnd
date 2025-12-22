@@ -4,6 +4,7 @@ import '../../../view_models/patient_auth_view_model.dart';
 import '../../../services/doctor_service.dart';
 import '../../../view_models/patient/appointment_view_model.dart';
 import '../../../models/doctor.dart';
+import '../doctor_detail_screen.dart';
 
 class BookAppointmentScreen extends StatefulWidget {
   const BookAppointmentScreen({Key? key}) : super(key: key);
@@ -252,7 +253,7 @@ class _BookAppointmentScreenState extends State<BookAppointmentScreen> {
                     children: [
                       Text(doc.speciality),
                       Text(
-                        "Prix: ${doc.consultationFee.toStringAsFixed(0)} MAD", 
+                        "Prix: ${doc.consultationFee.toStringAsFixed(0)} MAD",
                         style: const TextStyle(
                           fontWeight: FontWeight.bold,
                           color: Colors.green,
@@ -260,9 +261,30 @@ class _BookAppointmentScreenState extends State<BookAppointmentScreen> {
                       ),
                     ],
                   ),
-                  trailing: isSelected
-                      ? const Icon(Icons.check_circle, color: Color(0xFF567991))
-                      : null,
+                  trailing: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      IconButton(
+                        icon: const Icon(
+                          Icons.info_outline,
+                          color: Colors.grey,
+                        ),
+                        onPressed: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (_) => DoctorDetailScreen(doctor: doc),
+                            ),
+                          );
+                        },
+                      ),
+                      if (isSelected)
+                        const Icon(
+                          Icons.check_circle,
+                          color: Color(0xFF567991),
+                        ),
+                    ],
+                  ),
                   onTap: () {
                     setState(() {
                       _selectedDoctorId = doc.id;
