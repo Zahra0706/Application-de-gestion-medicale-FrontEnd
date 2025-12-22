@@ -1,3 +1,5 @@
+import 'utilisateur.dart';
+
 class PatientProfileModel {
   final String? bloodType;
   final String? allergies;
@@ -5,6 +7,7 @@ class PatientProfileModel {
   final String? emergencyPhone;
   final double? height;
   final double? weight;
+  final Utilisateur? user;
 
   PatientProfileModel({
     this.bloodType,
@@ -13,6 +16,7 @@ class PatientProfileModel {
     this.emergencyPhone,
     this.height,
     this.weight,
+    this.user,
   });
 
   factory PatientProfileModel.fromJson(Map<String, dynamic> json) {
@@ -27,6 +31,7 @@ class PatientProfileModel {
       weight: json['weight'] != null
           ? (json['weight'] as num).toDouble()
           : null,
+      user: json['user'] != null ? Utilisateur.fromJson(json['user']) : null,
     );
   }
 

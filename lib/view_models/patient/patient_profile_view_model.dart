@@ -53,4 +53,28 @@ class PatientProfileViewModel extends ChangeNotifier {
     _error = null;
     notifyListeners();
   }
+
+  Future<bool> changePassword(
+    String token,
+    String oldPassword,
+    String newPassword,
+    String confirmPassword,
+  ) async {
+    _setLoading(true);
+    _clearError();
+    try {
+      await _apiService.changePassword(
+        token,
+        oldPassword,
+        newPassword,
+        confirmPassword,
+      );
+      return true;
+    } catch (e) {
+      _setError(e.toString().replaceAll('Exception: ', ''));
+      return false;
+    } finally {
+      _setLoading(false);
+    }
+  }
 }

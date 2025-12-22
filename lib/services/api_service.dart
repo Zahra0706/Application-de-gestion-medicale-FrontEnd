@@ -140,4 +140,46 @@ class ApiService {
     }
   }
 
+  Future<void> changePassword(
+    String token,
+    String oldPassword,
+    String newPassword,
+    String confirmPassword,
+  ) async {
+    final url = Uri.parse('$apiPrefix/auth/password/change/');
+    final response = await http.post(
+      url,
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': 'Token $token',
+      },
+      body: json.encode({
+        'old_password': oldPassword,
+        'new_password': newPassword,
+        'confirm_password': confirmPassword,
+      }),
+    );
+
+    if (response.statusCode != 200) {
+      String errorMessage =
+          'Erreur de changement de mot de passe (${response.statusCode})';
+      try {
+        final body = json.decode(utf8.decode(response.bodyBytes));
+        if (body is Map<String, dynamic>) {
+          if (body.containsKey('old_password')) {
+            errorMessage = body['old_password'][0];
+          } else if (body.containsKey('confirm_password')) {
+            errorMessage = body['confirm_password'][0];
+          } else if (body.containsKey('new_password')) {
+            errorMessage = body['new_password'][0];
+          } else if (body.containsKey('detail')) {
+            errorMessage = body['detail'];
+          }
+        }
+      } catch (e) {
+        print("Error parsing password change error: $e");
+      }
+      throw Exception(errorMessage);
+    }
   }
+}
