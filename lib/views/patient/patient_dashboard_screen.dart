@@ -7,6 +7,7 @@ import 'appointments/appointment_list_screen.dart';
 import 'appointments/book_appointment_screen.dart';
 import 'profile/patient_profile_screen.dart';
 import 'documents/documents_screen.dart';
+import 'medical_record/medical_record_screen.dart';
 
 class PatientDashboardScreen extends StatefulWidget {
   const PatientDashboardScreen({Key? key}) : super(key: key);
@@ -240,6 +241,17 @@ class _PatientDashboardScreenState extends State<PatientDashboardScreen> {
             leading: const Icon(Icons.medical_services),
             title: const Text('Dossier médical'),
             onTap: () {},
+          ),
+          ListTile(
+            leading: const Icon(Icons.assignment),
+            title: const Text('Dossier médical'),
+            onTap: () {
+              Navigator.pop(context);
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (_) => const MedicalRecordScreen()),
+              );
+            },
           ),
           ListTile(
             leading: const Icon(Icons.folder),
