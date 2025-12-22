@@ -1,8 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../../../view_models/doctor_auth_view_model.dart';
-// If doctor registration exists, import it here. For now no register link for doctor requested or implied as strictly managed.
-// User only asked for Patient Register link usage.
+import '../register_doctor_screen.dart';
 
 class DoctorLoginForm extends StatefulWidget {
   const DoctorLoginForm({Key? key}) : super(key: key);
@@ -178,6 +177,33 @@ class _DoctorLoginFormState extends State<DoctorLoginForm> {
                       ),
                     ),
             ),
+          ),
+
+          const SizedBox(height: 20),
+
+          // Register Link for Doctor
+          Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              const Text("Pas encore de compte ? "),
+              GestureDetector(
+                onTap: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => const RegisterDoctorScreen(),
+                    ),
+                  );
+                },
+                child: const Text(
+                  "S'inscrire",
+                  style: TextStyle(
+                    color: Color.fromARGB(255, 86, 121, 145),
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+              ),
+            ],
           ),
         ],
       ),
