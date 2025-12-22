@@ -96,6 +96,12 @@ class _PatientProfileScreenState extends State<PatientProfileScreen> {
                             ),
                             const Divider(),
                             _buildInfoRow(
+                              Icons.calendar_today,
+                              "Date de naissance",
+                              user?.dateOfBirth ?? "Non renseigné",
+                            ),
+                            const Divider(),
+                            _buildInfoRow(
                               Icons.home,
                               "Adresse",
                               user?.address ?? "Non renseigné",

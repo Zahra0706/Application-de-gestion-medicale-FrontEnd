@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:provider/provider.dart';
 import 'view_models/patient_auth_view_model.dart';
 import 'view_models/doctor_auth_view_model.dart';
@@ -61,6 +62,15 @@ class MyApp extends StatelessWidget {
                 secondary: const Color(0xFF86B7D7),
               ),
         ),
+        localizationsDelegates: const [
+          GlobalMaterialLocalizations.delegate,
+          GlobalWidgetsLocalizations.delegate,
+          GlobalCupertinoLocalizations.delegate,
+        ],
+        supportedLocales: const [
+          Locale('en'), // English
+          Locale('fr'), // French
+        ],
         home: const CombinedLoginScreen(),
       ),
     );

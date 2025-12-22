@@ -19,7 +19,9 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
   final TextEditingController _lastNameCtrl = TextEditingController();
   final TextEditingController _emailCtrl = TextEditingController();
   final TextEditingController _phoneCtrl = TextEditingController();
+
   final TextEditingController _addressCtrl = TextEditingController();
+  final TextEditingController _dateOfBirthCtrl = TextEditingController();
 
   // Medical Info
   String? _selectedBloodType;
@@ -63,7 +65,9 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
       _lastNameCtrl.text = profile.user?.lastName ?? '';
       _emailCtrl.text = profile.user?.email ?? '';
       _phoneCtrl.text = profile.user?.phone ?? '';
+
       _addressCtrl.text = profile.user?.address ?? '';
+      _dateOfBirthCtrl.text = profile.user?.dateOfBirth ?? '';
 
       // Medical Info
       _selectedBloodType = profile.bloodType;
@@ -81,7 +85,9 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
     _lastNameCtrl.dispose();
     _emailCtrl.dispose();
     _phoneCtrl.dispose();
+
     _addressCtrl.dispose();
+    _dateOfBirthCtrl.dispose();
 
     _allergiesCtrl.dispose();
     _heightCtrl.dispose();
@@ -156,6 +162,45 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
             ),
             const SizedBox(height: 16),
             _buildTextField(_addressCtrl, "Adresse", Icons.home, maxLines: 2),
+            const SizedBox(height: 16),
+            GestureDetector(
+              onTap: () async {
+                final DateTime? picked = await showDatePicker(
+                  context: context,
+                  initialDate:
+                      DateTime.tryParse(_dateOfBirthCtrl.text) ??
+                      DateTime.now().subtract(const Duration(days: 365 * 18)),
+                  firstDate: DateTime(1900),
+                  lastDate: DateTime.now(),
+                  locale: const Locale("fr", "FR"),
+                  builder: (context, child) {
+                    return Theme(
+                      data: Theme.of(context).copyWith(
+                        colorScheme: const ColorScheme.light(
+                          primary: Color(0xFF567991),
+                          onPrimary: Colors.white,
+                          onSurface: Colors.black,
+                        ),
+                      ),
+                      child: child!,
+                    );
+                  },
+                );
+                if (picked != null) {
+                  setState(() {
+                    _dateOfBirthCtrl.text =
+                        "${picked.year}-${picked.month.toString().padLeft(2, '0')}-${picked.day.toString().padLeft(2, '0')}";
+                  });
+                }
+              },
+              child: AbsorbPointer(
+                child: _buildTextField(
+                  _dateOfBirthCtrl,
+                  "Date de naissance",
+                  Icons.calendar_today,
+                ),
+              ),
+            ),
           ]),
         ],
       ),
@@ -474,6 +519,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
           'phone': _phoneCtrl.text.trim(),
           'email': _emailCtrl.text.trim(),
           'address': _addressCtrl.text.trim(),
+          'date_of_birth': _dateOfBirthCtrl.text.trim(),
         },
       };
 
