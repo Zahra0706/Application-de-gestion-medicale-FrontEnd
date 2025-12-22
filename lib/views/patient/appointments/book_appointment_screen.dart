@@ -33,6 +33,8 @@ class _BookAppointmentScreenState extends State<BookAppointmentScreen> {
   bool _isLoadingSlots = false;
   String? _slotError;
 
+  bool _isConfirming = false;
+
   @override
   void initState() {
     super.initState();
@@ -88,16 +90,19 @@ class _BookAppointmentScreenState extends State<BookAppointmentScreen> {
             padding: const EdgeInsets.only(top: 20.0),
             child: Row(
               children: [
-                ElevatedButton(
-                  onPressed: details.onStepContinue,
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: const Color(0xFF567991),
-                    foregroundColor: Colors.white,
+                if (_isConfirming)
+                  const CircularProgressIndicator()
+                else
+                  ElevatedButton(
+                    onPressed: details.onStepContinue,
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: const Color(0xFF567991),
+                      foregroundColor: Colors.white,
+                    ),
+                    child: Text(_currentStep == 2 ? 'Confirmer' : 'Suivant'),
                   ),
-                  child: const Text('Suivant'),
-                ),
                 const SizedBox(width: 12),
-                if (_currentStep > 0)
+                if (_currentStep > 0 && !_isConfirming)
                   TextButton(
                     onPressed: details.onStepCancel,
                     child: const Text(
@@ -134,6 +139,8 @@ class _BookAppointmentScreenState extends State<BookAppointmentScreen> {
   }
 
   void _nextStep() {
+    if (_isConfirming) return; // Prevent multiple clicks
+
     if (_currentStep == 0) {
       if (_selectedDoctorId == null) {
         ScaffoldMessenger.of(context).showSnackBar(
@@ -158,6 +165,7 @@ class _BookAppointmentScreenState extends State<BookAppointmentScreen> {
   }
 
   void _prevStep() {
+    if (_isConfirming) return;
     if (_currentStep > 0) {
       setState(() => _currentStep -= 1);
     }
@@ -369,27 +377,33 @@ class _BookAppointmentScreenState extends State<BookAppointmentScreen> {
   }
 
   Future<void> _confirmAppointment() async {
+    if (_isConfirming) return;
+
     // Vérification plus robuste
     if (_selectedDate == null) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text("Date non sélectionnée")),
-      );
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(const SnackBar(content: Text("Date non sélectionnée")));
       return;
     }
-    
+
     if (_selectedTime == null) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text("Heure non sélectionnée")),
-      );
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(const SnackBar(content: Text("Heure non sélectionnée")));
       return;
     }
-    
+
     if (_selectedDoctorId == null || _selectedDoctor == null) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text("Médecin non sélectionné")),
-      );
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(const SnackBar(content: Text("Médecin non sélectionné")));
       return;
     }
+
+    setState(() {
+      _isConfirming = true;
+    });
 
     try {
       // Parse time avec validation
@@ -397,14 +411,14 @@ class _BookAppointmentScreenState extends State<BookAppointmentScreen> {
       if (parts.length != 2) {
         throw FormatException("Format d'heure invalide");
       }
-      
+
       final hour = int.tryParse(parts[0]);
       final minute = int.tryParse(parts[1]);
-      
+
       if (hour == null || minute == null) {
         throw FormatException("Heure invalide");
       }
-      
+
       final dt = DateTime(
         _selectedDate!.year,
         _selectedDate!.month,
@@ -413,16 +427,21 @@ class _BookAppointmentScreenState extends State<BookAppointmentScreen> {
         minute,
       );
 
-      final viewModel = Provider.of<AppointmentViewModel>(context, listen: false);
+      final viewModel = Provider.of<AppointmentViewModel>(
+        context,
+        listen: false,
+      );
       final authViewModel = Provider.of<PatientAuthViewModel>(
         context,
         listen: false,
       );
-      
+
       final token = authViewModel.authResponse?.token;
       if (token == null) {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text("Session expirée, veuillez vous reconnecter")),
+          const SnackBar(
+            content: Text("Session expirée, veuillez vous reconnecter"),
+          ),
         );
         return;
       }
@@ -431,25 +450,35 @@ class _BookAppointmentScreenState extends State<BookAppointmentScreen> {
         token,
         _selectedDoctorId!, // Assurez-vous que c'est un int
         dt,
-        _reasonController.text.isNotEmpty ? _reasonController.text : "Consultation générale",
+        _reasonController.text.isNotEmpty
+            ? _reasonController.text
+            : "Consultation générale",
       );
 
       if (success && mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text("Rendez-vous confirmé !")),
-        );
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(const SnackBar(content: Text("Rendez-vous confirmé !")));
         Navigator.pop(context);
       } else if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text("Erreur: ${viewModel.error}")),
-        );
+        // If it was just a duplicate submission caught late or something similar,
+        // we might not want to show an error if it actually succeeded before.
+        // But here we rely on viewModel returning false.
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text("Erreur: ${viewModel.error}")));
       }
-      
     } catch (e) {
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text("Erreur: ${e.toString()}")),
-        );
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text("Erreur: ${e.toString()}")));
+      }
+    } finally {
+      if (mounted) {
+        setState(() {
+          _isConfirming = false;
+        });
       }
     }
   }
