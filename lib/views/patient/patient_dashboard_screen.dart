@@ -238,9 +238,15 @@ class _PatientDashboardScreenState extends State<PatientDashboardScreen> {
             child: Text('Santé', style: TextStyle(color: Colors.grey)),
           ),
           ListTile(
-            leading: const Icon(Icons.medical_services),
-            title: const Text('Dossier médical'),
-            onTap: () {},
+            leading: const Icon(Icons.calendar_today),
+            title: const Text('Rendez-vous'),
+            onTap: () {
+              Navigator.pop(context);
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (_) => const AppointmentListScreen()),
+              );
+            },
           ),
           ListTile(
             leading: const Icon(Icons.assignment),
