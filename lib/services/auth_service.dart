@@ -5,7 +5,6 @@ abstract class AuthService {
   Future<AuthResponse> registerPatient(RegisterRequest request);
   Future<AuthResponse> loginPatient(String email, String password);
   Future<AuthResponse> loginDoctor(String email, String password);
-  // Future<AuthResponse> login(String email, String password); // Removed generic login
 
   Future<void> logout();
 }

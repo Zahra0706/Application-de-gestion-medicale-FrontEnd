@@ -103,19 +103,41 @@ class ApiService {
     );
 
     if (response.statusCode == 200) {
-      return AuthResponse.fromJson(json.decode(response.body));
+      return AuthResponse.fromJson(
+        json.decode(utf8.decode(response.bodyBytes)),
+      );
     } else {
-      throw Exception('Identifiants incorrects (${response.statusCode})');
+      String errorMessage = 'Identifiants incorrects (${response.statusCode})';
+      try {
+        final body = json.decode(utf8.decode(response.bodyBytes));
+        if (body is Map<String, dynamic>) {
+          if (body.containsKey('non_field_errors') &&
+              body['non_field_errors'] is List &&
+              (body['non_field_errors'] as List).isNotEmpty) {
+            errorMessage = body['non_field_errors'][0];
+          } else if (body.containsKey('detail')) {
+            errorMessage = body['detail'];
+          } else if (body.containsKey('error')) {
+            errorMessage = body['error'];
+          } else if (body.containsKey('message')) {
+            errorMessage = body['message'];
+          } else if (body.values.isNotEmpty) {
+            final firstVal = body.values.first;
+            if (firstVal is List && firstVal.isNotEmpty) {
+              errorMessage = firstVal[0].toString();
+            } else {
+              errorMessage = firstVal.toString();
+            }
+          }
+        } else if (body is List && body.isNotEmpty) {
+          errorMessage = body[0].toString();
+        }
+      } catch (e) {
+        // Fallback to default message if parsing fails
+        print("Error parsing error response: $e");
+      }
+      throw Exception(errorMessage);
     }
   }
 
-  // Keeping generic login for backward compatibility if needed, but pointing to patient by default or deprecated?
-  // User asked for specific endpoints. I will comment out or remove generic login if not used elsewhere,
-  // but to be safe I will leave it or redirect it.
-  // Given the user request, I'll just keep the new methods.
-  // The generic login might be used by existing code. I'll check usages later or just keep it separate.
-  // Actually, I'll replace the existing `login` to avoiding conflict if I use the same name,
-  // but I can't overload. I'll just add the new ones and keep `login` for now or remove it if I replace usages.
-  // The tool call `replace_file_content` replaces the specific chunk. I will replace the `login` function with `loginPatient` and `loginDoctor` and a private helper.
-  // Wait, `ApiAuthService` uses `login`. I should check `ApiAuthService` first.
-}
+  }
