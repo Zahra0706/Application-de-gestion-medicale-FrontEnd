@@ -171,7 +171,7 @@ class _DoctorAppointmentsScreenState extends State<DoctorAppointmentsScreen> wit
                       ElevatedButton(
                         onPressed: () => _handleAction(context, appt, 'accept'),
                         style: ElevatedButton.styleFrom(
-                          backgroundColor: const Color(0xFF567991),
+                          backgroundColor: const Color(0xFFE6F3EF),
                         ),
                         child: const Text('Accepter'),
                       ),
