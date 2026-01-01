@@ -22,6 +22,7 @@ import 'view_models/doctor_patients_view_model.dart';
 import 'repositories/doctor_patient_repository.dart';
 import 'view_models/doctor_medical_record_view_model.dart';
 import 'view_models/doctor_medical_document_view_model.dart';
+import 'view_models/chat_view_model.dart';
 
 void main() {
   runApp(const MyApp());
@@ -72,6 +73,7 @@ class MyApp extends StatelessWidget {
         ChangeNotifierProvider(create: (_) => DoctorPatientsViewModel(DoctorPatientRepository())),
         ChangeNotifierProvider(create: (_) => DoctorMedicalRecordViewModel()),
         ChangeNotifierProvider(create: (_) => DoctorMedicalDocumentViewModel()),
+        ChangeNotifierProvider(create: (_) => ChatViewModel()),
       ],
       child: MaterialApp(
         title: 'MedConnect',

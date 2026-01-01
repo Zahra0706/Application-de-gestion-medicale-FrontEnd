@@ -8,6 +8,7 @@ import 'appointments/book_appointment_screen.dart';
 import 'profile/patient_profile_screen.dart';
 import 'documents/documents_screen.dart';
 import 'medical_record/medical_record_screen.dart';
+import '../messaging/doctor_list_screen.dart';
 
 class PatientDashboardScreen extends StatefulWidget {
   const PatientDashboardScreen({Key? key}) : super(key: key);
@@ -160,7 +161,6 @@ class _PatientDashboardScreenState extends State<PatientDashboardScreen> {
             icon: Icon(Icons.calendar_today),
             label: 'RDV',
           ),
-          BottomNavigationBarItem(icon: Icon(Icons.message), label: 'Messages'),
           BottomNavigationBarItem(icon: Icon(Icons.folder), label: 'Documents'),
           BottomNavigationBarItem(icon: Icon(Icons.person), label: 'Profil'),
         ],
@@ -170,12 +170,12 @@ class _PatientDashboardScreenState extends State<PatientDashboardScreen> {
               context,
               MaterialPageRoute(builder: (_) => const AppointmentListScreen()),
             );
-          } else if (index == 3) {
+          } else if (index == 2) {
             Navigator.push(
               context,
               MaterialPageRoute(builder: (_) => const DocumentsScreen()),
             );
-          } else if (index == 4) {
+          } else if (index == 3) {
             Navigator.push(
               context,
               MaterialPageRoute(builder: (_) => const PatientProfileScreen()),
@@ -345,13 +345,6 @@ class _PatientDashboardScreenState extends State<PatientDashboardScreen> {
           ),
           const SizedBox(width: 12),
           _buildSummaryCard(
-            "Messages",
-            "$msgCount non lus",
-            Icons.message,
-            const Color(0xFF86B7D7),
-          ),
-          const SizedBox(width: 12),
-          _buildSummaryCard(
             "Documents",
             "$docCount nouveaux",
             Icons.folder,
@@ -444,12 +437,6 @@ class _PatientDashboardScreenState extends State<PatientDashboardScreen> {
             context,
             MaterialPageRoute(builder: (_) => const DocumentsScreen()),
           ),
-        ),
-        _buildActionCard(
-          context,
-          "Contacter Médecin",
-          Icons.chat,
-          Colors.purple,
         ),
         _buildActionCard(
           context,

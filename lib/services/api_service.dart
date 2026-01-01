@@ -3,9 +3,13 @@ import 'package:http/http.dart' as http;
 import '../models/register_request.dart';
 import '../models/auth_response.dart';
 import '../models/patient_profile_model.dart';
+import '../models/conversation_model.dart';
+import '../models/message_model.dart';
+import '../models/doctor.dart';
+import 'dart:io';
 
 class ApiService {
-  static const String baseUrl = "http://127.0.0.1:8000";
+  static const String baseUrl = "http://192.168.1.139:8000";
   static const String apiPrefix = "$baseUrl/api";
 
   Future<AuthResponse> registerPatient(RegisterRequest request) async {
@@ -149,4 +153,119 @@ class ApiService {
   // but I can't overload. I'll just add the new ones and keep `login` for now or remove it if I replace usages.
   // The tool call `replace_file_content` replaces the specific chunk. I will replace the `login` function with `loginPatient` and `loginDoctor` and a private helper.
   // Wait, `ApiAuthService` uses `login`. I should check `ApiAuthService` first.
+  // ...
+
+  // MESSAGING
+
+  Future<List<ConversationModel>> getConversations(String token) async {
+    final url = Uri.parse('$apiPrefix/conversations/');
+    final response = await http.get(
+      url,
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': 'Token $token',
+      },
+    );
+
+    if (response.statusCode == 200) {
+      final List body = json.decode(utf8.decode(response.bodyBytes));
+      return body.map((e) => ConversationModel.fromJson(e)).toList();
+    } else {
+      throw Exception('Erreur chargement conversations: ${response.statusCode}');
+    }
+  }
+
+  Future<List<MessageModel>> getMessages(String token, int conversationId) async {
+    final url = Uri.parse('$apiPrefix/conversations/$conversationId/messages/');
+    final response = await http.get(
+      url,
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': 'Token $token',
+      },
+    );
+
+    if (response.statusCode == 200) {
+      final List body = json.decode(utf8.decode(response.bodyBytes));
+      return body.map((e) => MessageModel.fromJson(e)).toList();
+    } else {
+      throw Exception('Erreur chargement messages: ${response.statusCode}');
+    }
+  }
+
+  Future<void> sendMessage(String token, int conversationId, String? content, File? file) async {
+    final url = Uri.parse('$apiPrefix/messages/');
+    var request = http.MultipartRequest('POST', url);
+    request.headers['Authorization'] = 'Token $token';
+    request.fields['conversation'] = conversationId.toString();
+    if (content != null) {
+      request.fields['content'] = content;
+    }
+    if (file != null) {
+      var stream = http.ByteStream(file.openRead());
+      var length = await file.length();
+      var multipartFile = http.MultipartFile(
+        'file', 
+        stream, 
+        length,
+        filename: file.path.split('/').last
+      );
+      request.files.add(multipartFile);
+    }
+
+    var response = await request.send();
+    if (response.statusCode != 201) {
+      throw Exception('Erreur envoi message: ${response.statusCode}');
+    }
+  }
+
+  Future<void> markAsRead(String token, int messageId) async {
+    final url = Uri.parse('$apiPrefix/messages/$messageId/read/');
+    final response = await http.patch(
+      url,
+      headers: {
+        'Authorization': 'Token $token',
+      },
+    );
+    if (response.statusCode != 200) {
+       throw Exception('Erreur markAsRead: ${response.statusCode}');
+    }
+  }
+
+  Future<List<Doctor>> getDoctors(String token) async {
+    final url = Uri.parse('$apiPrefix/doctors/');
+    final response = await http.get(
+      url,
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': 'Token $token',
+      },
+    );
+
+    if (response.statusCode == 200) {
+      final List body = json.decode(utf8.decode(response.bodyBytes));
+      // Assuming DoctorModel or similar structure
+      return body.map((e) => Doctor.fromJson(e)).toList(); 
+    } else {
+      throw Exception('Erreur chargement médecins: ${response.statusCode}');
+    }
+  }
+
+  Future<ConversationModel> createConversation(String token, int doctorId) async {
+    final url = Uri.parse('$apiPrefix/conversations/');
+    final response = await http.post(
+      url,
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': 'Token $token',
+      },
+      body: json.encode({'doctor': doctorId}),
+    );
+
+    if (response.statusCode == 200 || response.statusCode == 201) {
+      return ConversationModel.fromJson(json.decode(utf8.decode(response.bodyBytes)));
+    } else {
+      throw Exception('Erreur création conversation: ${response.statusCode}');
+    }
+  }
 }

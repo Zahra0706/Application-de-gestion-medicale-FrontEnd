@@ -42,7 +42,6 @@ class _DoctorDashboardScreenState extends State<DoctorDashboardScreen> {
   final List<Widget> _screens = [
     const SizedBox.shrink(), // Dashboard home is handled separately in build method
     const DoctorAppointmentsScreen(),
-    const Center(child: Text('Messages')),
     const DoctorPatientsScreen(),
     const DoctorProfileScreen(),
   ];
@@ -77,7 +76,6 @@ class _DoctorDashboardScreenState extends State<DoctorDashboardScreen> {
             icon: Icon(Icons.calendar_today),
             label: 'Agenda',
           ),
-          BottomNavigationBarItem(icon: Icon(Icons.message), label: 'Messages'),
           BottomNavigationBarItem(icon: Icon(Icons.people), label: 'Patients'),
           BottomNavigationBarItem(icon: Icon(Icons.person), label: 'Profil'),
         ],
@@ -256,8 +254,6 @@ class _DoctorDashboardScreenState extends State<DoctorDashboardScreen> {
               Expanded(child: _buildStatCard("Patients Vus", "$patients", Icons.people, Colors.blue)),
               const SizedBox(width: 10),
               Expanded(child: _buildStatCard("RDV à venir", "$upcoming", Icons.calendar_month, Colors.orange)),
-               const SizedBox(width: 10),
-              Expanded(child: _buildStatCard("Messages", "$messages", Icons.message, Colors.purple)),
           ],
       );
   }

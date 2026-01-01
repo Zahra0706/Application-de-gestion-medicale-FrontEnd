@@ -1,5 +1,6 @@
 class Doctor {
   final int id;
+  final int userId;
   final String firstName;
   final String lastName;
   final String speciality;
@@ -8,6 +9,7 @@ class Doctor {
 
   Doctor({
     required this.id,
+    required this.userId,
     required this.firstName,
     required this.lastName,
     required this.speciality,
@@ -18,6 +20,7 @@ class Doctor {
   factory Doctor.fromJson(Map<String, dynamic> json) {
     return Doctor(
       id: json['id'],
+      userId: json['user']['id'],
       firstName: json['user']['first_name'] ?? '',
       lastName: json['user']['last_name'] ?? '',
       speciality: json['speciality_name'] ?? 'Général',
